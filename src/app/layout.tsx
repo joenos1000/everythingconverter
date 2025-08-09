@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { UiVariantProvider } from "@/hooks/ui-variant";
+import { AiModelProvider } from "@/hooks/ai-model";
 import { UiVariantToggle } from "@/components/ui/ui-variant-toggle";
+import { ModelToggle } from "@/components/ui/model-toggle";
 import { Toaster } from "sonner";
 
 const geistSans = localFont({
@@ -30,9 +32,12 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-mono)]`}>
         <UiVariantProvider>
-          <UiVariantToggle />
-          {children}
-          <Toaster richColors theme="dark" position="top-right" />
+          <AiModelProvider>
+            <UiVariantToggle />
+            <ModelToggle />
+            {children}
+            <Toaster richColors theme="dark" position="top-right" />
+          </AiModelProvider>
         </UiVariantProvider>
       </body>
     </html>

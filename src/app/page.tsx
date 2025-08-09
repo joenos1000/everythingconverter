@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AsciiWave } from "@/components/ascii-wave";
 import AsciiTunnelBackground from "@/components/ascii-tunnel-background";
-import { UiVariantToggle } from "@/components/ui/ui-variant-toggle";
 import { useUiVariant } from "@/hooks/ui-variant";
+import { useAiModel } from "@/hooks/ai-model";
 
 export default function Home() {
   const { variant } = useUiVariant();
+  const { selectedModel } = useAiModel();
   const [fromText, setFromText] = useState("");
   const [toText, setToText] = useState("");
   const [isConverting, setIsConverting] = useState(false);
@@ -43,7 +44,7 @@ export default function Home() {
       const resp = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages, temperature: 0.2, topP: 0.1, stream: false, from: fromText, to: toText }),
+        body: JSON.stringify({ messages, temperature: 0.2, topP: 0.1, stream: false, from: fromText, to: toText, model: selectedModel }),
       });
 
       if (!resp.ok) {
@@ -85,7 +86,7 @@ export default function Home() {
     } finally {
       setIsConverting(false);
     }
-  }, [canConvert, fromText, toText]);
+  }, [canConvert, fromText, toText, selectedModel]);
 
   const handleClear = useCallback(() => {
     setFromText("");

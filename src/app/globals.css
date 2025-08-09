@@ -36,7 +36,7 @@
     --chart-3: 210 20% 40%;
     --chart-4: 90 50% 50%;
     --chart-5: 270 50% 60%;
-    --radius: 0.75rem;
+    --radius: 0.75;
   }
   .dark {
     --background: 0 0% 8%;

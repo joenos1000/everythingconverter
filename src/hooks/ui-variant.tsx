@@ -14,12 +14,22 @@ const UiVariantContext = createContext<UiVariantContextValue | undefined>(undefi
 const STORAGE_KEY = "ui-variant";
 
 export function UiVariantProvider({ children }: { children: React.ReactNode }) {
-  const [variant, setVariant] = useState<UiVariant>(() => {
-    if (typeof window === "undefined") return "classic";
-    const saved = window.localStorage.getItem(STORAGE_KEY) as UiVariant | null;
-    return saved ?? "classic";
-  });
+  // Always start with a stable default for SSR to avoid hydration mismatch
+  const [variant, setVariant] = useState<UiVariant>("classic");
 
+  // After mount, load the saved variant and update state
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY) as UiVariant | null;
+      if (saved && saved !== variant) {
+        setVariant(saved);
+      }
+    } catch {}
+    // run only once at mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist changes
   useEffect(() => {
     try {
       window.localStorage.setItem(STORAGE_KEY, variant);

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AsciiWave } from "@/components/ascii-wave";
+import AsciiTunnelBackground from "@/components/ascii-tunnel-background";
 import { UiVariantToggle } from "@/components/ui/ui-variant-toggle";
 import { useUiVariant } from "@/hooks/ui-variant";
 
@@ -108,10 +109,20 @@ export default function Home() {
   }, [fromText, toText, result]);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-6">
-      <main className="w-full max-w-2xl space-y-6">
+    <div className="relative min-h-screen w-full flex items-center justify-center p-6">
+      {variant === "tunnel" && <AsciiTunnelBackground />}
+      <main className="relative z-10 w-full max-w-2xl space-y-6">
         <header className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold tracking-tight">The Everything Converter</h1>
+          {variant === "tunnel" ? (
+            <pre className="w-full text-center m-0 whitespace-pre font-mono leading-none text-primary/90 text-xs sm:text-sm">
+{`▄▖▌               ▗ ▘                  ▗       
+▐ ▛▌█▌  █▌▌▌█▌▛▘▌▌▜▘▌▛▌▛▌  ▛▘▛▌▛▌▌▌█▌▛▘▜▘█▌▛▘  
+▐ ▌▌▙▖  ▙▖▚▘▙▖▌ ▙▌▐▖▌▌▌▙▌  ▙▖▙▌▌▌▚▘▙▖▌ ▐▖▙▖▌   
+                ▄▌     ▄▌                      `}
+            </pre>
+          ) : (
+            <h1 className="w-full text-center text-xl font-semibold tracking-tight">The Everything Converter</h1>
+          )}
         </header>
 
         {variant === "classic" && (
@@ -153,21 +164,63 @@ export default function Home() {
         )}
 
         {variant === "tunnel" && (
-          <section className="p-8 text-center text-muted-foreground border rounded-lg">
-            tunnel ui coming soon
+          <section className="p-0">
+            <div className="flex items-end gap-3">
+              <div className="flex-1">
+                <input
+                  value={fromText}
+                  onChange={(e) => setFromText(e.target.value)}
+                  placeholder="shaq o neils"
+                  className="w-full rounded-sm bg-transparent px-3 py-2 outline-none ring-1 ring-transparent focus:ring-ring border border-white/20"
+                />
+              </div>
+              <div className="pb-2 flex items-center justify-center min-w-[56px]">
+                {isConverting ? (
+                  <AsciiWave />
+                ) : (
+                  <div className="px-1 text-muted-foreground font-mono text-base select-none">-&gt;</div>
+                )}
+              </div>
+              <div className="flex-1">
+                <input
+                  value={toText}
+                  onChange={(e) => setToText(e.target.value)}
+                  placeholder="mount everest height"
+                  className="w-full rounded-sm bg-transparent px-3 py-2 outline-none ring-1 ring-transparent focus:ring-ring border border-white/20"
+                />
+              </div>
+            </div>
           </section>
         )}
 
-        <section className="flex items-center gap-2">
-          <Button onClick={handleConvert} disabled={!canConvert || isConverting}>
-            {isConverting ? "Converting..." : "Convert"}
-          </Button>
-          <Button variant="secondary" onClick={handleClear}>
-            Clear
-          </Button>
-          <Button variant="outline" onClick={handleShare} className="ml-auto">
-            Share
-          </Button>
+        <section className={variant === "tunnel" ? "flex flex-col items-center gap-2" : "flex items-center gap-2"}>
+          {variant === "tunnel" ? (
+            <>
+              <div className="flex items-center gap-2">
+                <Button onClick={handleConvert} disabled={!canConvert || isConverting} className="rounded-none h-8 px-3">
+                  {isConverting ? "Converting..." : "Convert"}
+                </Button>
+                <Button variant="secondary" onClick={handleClear} className="rounded-none h-8 px-3">
+                  Clear
+                </Button>
+              </div>
+              <Button variant="link" onClick={handleShare} className="h-auto px-0">
+                Share
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={handleConvert} disabled={!canConvert || isConverting}>
+                {isConverting ? "Converting..." : "Convert"}
+              </Button>
+              <Button variant="secondary" onClick={handleClear}>
+                Clear
+              </Button>
+              <Button variant="outline" onClick={handleShare} className="ml-auto">
+                Share
+              </Button>
+            </>
+          )}
         </section>
 
         {result !== null && (

@@ -112,7 +112,6 @@ export default function Home() {
       <main className="w-full max-w-2xl space-y-6">
         <header className="flex items-center justify-between">
           <h1 className="text-xl font-semibold tracking-tight">The Everything Converter</h1>
-          <UiVariantToggle />
         </header>
 
         {variant === "classic" && (
@@ -145,6 +144,18 @@ export default function Home() {
             </div>
           </div>
         </section>
+        )}
+
+        {variant === "termial" && (
+          <section className="p-8 text-center text-muted-foreground border rounded-lg">
+            termial ui coming soon
+          </section>
+        )}
+
+        {variant === "tunnel" && (
+          <section className="p-8 text-center text-muted-foreground border rounded-lg">
+            tunnel ui coming soon
+          </section>
         )}
 
         <section className="flex items-center gap-2">

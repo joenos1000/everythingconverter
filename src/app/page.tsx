@@ -4,8 +4,11 @@ import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AsciiWave } from "@/components/ascii-wave";
+import { UiVariantToggle } from "@/components/ui/ui-variant-toggle";
+import { useUiVariant } from "@/hooks/ui-variant";
 
 export default function Home() {
+  const { variant } = useUiVariant();
   const [fromText, setFromText] = useState("");
   const [toText, setToText] = useState("");
   const [isConverting, setIsConverting] = useState(false);
@@ -109,8 +112,10 @@ export default function Home() {
       <main className="w-full max-w-2xl space-y-6">
         <header className="flex items-center justify-between">
           <h1 className="text-xl font-semibold tracking-tight">The Everything Converter</h1>
+          <UiVariantToggle />
         </header>
 
+        {variant === "classic" && (
         <section className="space-y-2">
           <div className="flex items-start gap-3">
             <div className="flex-1">
@@ -140,6 +145,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        )}
 
         <section className="flex items-center gap-2">
           <Button onClick={handleConvert} disabled={!canConvert || isConverting}>

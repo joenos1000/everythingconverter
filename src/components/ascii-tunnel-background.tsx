@@ -97,7 +97,7 @@ export function AsciiTunnelBackground({
       if (!containerWidth || !containerHeight) return;
 
       const lines = current.split("\n");
-      const rows = Math.max(1, lines.length);
+      // const rows = Math.max(1, lines.length);
       const cols = Math.max(1, ...lines.map((l) => l.length));
 
       // Prepare measurement with a known font size
@@ -112,9 +112,10 @@ export function AsciiTunnelBackground({
       // Width-based fit
       const widthBasedFont = containerWidth / (charWidthPerPx * cols);
       // Height-based fit (approximate using line-height = 1)
-      const heightBasedFont = containerHeight / rows;
+      // const heightBasedFont = containerHeight / rows;
 
       // Choose width-based to guarantee edge-to-edge horizontally
+      // Could also use Math.min(widthBasedFont, heightBasedFont) for aspect ratio preservation
       const target = Math.max(6, Math.min(widthBasedFont, 60));
       setFontSizePx(target);
     };

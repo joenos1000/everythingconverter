@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AsciiWave } from "@/components/ascii-wave";
 import AsciiTunnelBackground from "@/components/ascii-tunnel-background";
+import { Terminal } from "@/components/terminal";
 import { useUiVariant } from "@/hooks/ui-variant";
 import { useAiModel } from "@/hooks/ai-model";
 
@@ -159,8 +160,8 @@ export default function Home() {
         )}
 
         {variant === "termial" && (
-          <section className="p-8 text-center text-muted-foreground border rounded-lg">
-            termial ui coming soon
+          <section className="w-full">
+            <Terminal />
           </section>
         )}
 

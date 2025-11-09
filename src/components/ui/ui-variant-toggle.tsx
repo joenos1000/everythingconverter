@@ -9,7 +9,7 @@ export function UiVariantToggle() {
 
   return (
     <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
-      <div className="text-xs text-muted-foreground">UI:</div>
+      <div className="text-xs text-muted-foreground">UI THEME:</div>
       <select
         className="rounded-md border bg-background px-2 py-1 text-sm"
         value={variant}

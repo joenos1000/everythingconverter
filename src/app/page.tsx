@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AsciiWave } from "@/components/ascii-wave";
@@ -18,6 +18,13 @@ export default function Home() {
   const [result, setResult] = useState<string | null>(null);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+
+  // Clear results when UI variant changes
+  useEffect(() => {
+    setResult(null);
+    setExplanation(null);
+    setIsOpen(false);
+  }, [variant]);
 
   const canConvert = useMemo(() => fromText.trim() !== "" && toText.trim() !== "", [fromText, toText]);
 
@@ -110,6 +117,12 @@ export default function Home() {
     }
   }, [fromText, toText, result]);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && canConvert && !isConverting) {
+      handleConvert();
+    }
+  }, [canConvert, isConverting, handleConvert]);
+
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center p-6">
       {variant === "tunnel" && <AsciiTunnelBackground />}
@@ -135,6 +148,7 @@ export default function Home() {
               <input
                 value={fromText}
                 onChange={(e) => setFromText(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="shaq o neils"
                 className="mt-1 w-full rounded-md bg-secondary px-3 py-3 outline-none ring-1 ring-transparent focus:ring-ring"
               />
@@ -151,6 +165,7 @@ export default function Home() {
               <input
                 value={toText}
                 onChange={(e) => setToText(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="mount everest height"
                 className="mt-1 w-full rounded-md bg-secondary px-3 py-3 outline-none ring-1 ring-transparent focus:ring-ring"
               />
@@ -172,6 +187,7 @@ export default function Home() {
                 <input
                   value={fromText}
                   onChange={(e) => setFromText(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   placeholder="shaq o neils"
                   className="w-full rounded-sm bg-transparent px-3 py-2 outline-none ring-1 ring-transparent focus:ring-ring border border-white/20"
                 />
@@ -187,6 +203,7 @@ export default function Home() {
                 <input
                   value={toText}
                   onChange={(e) => setToText(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   placeholder="mount everest height"
                   className="w-full rounded-sm bg-transparent px-3 py-2 outline-none ring-1 ring-transparent focus:ring-ring border border-white/20"
                 />
@@ -195,35 +212,48 @@ export default function Home() {
           </section>
         )}
 
-        <section className={variant === "tunnel" ? "flex flex-col items-center gap-2" : "flex items-center gap-2"}>
-          {variant === "tunnel" ? (
-            <>
-              <div className="flex items-center gap-2">
-                <Button onClick={handleConvert} disabled={!canConvert || isConverting} className="rounded-none h-8 px-3">
+        {variant !== "termial" && (
+          <section className={variant === "tunnel" ? "flex flex-col items-center gap-2" : "flex items-center gap-2"}>
+            {variant === "tunnel" ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <Button onClick={handleConvert} disabled={!canConvert || isConverting} className="rounded-none h-8 px-3">
+                    {isConverting ? "Converting..." : "Convert"}
+                  </Button>
+                  <Button variant="secondary" onClick={handleClear} className="rounded-none h-8 px-3">
+                    Clear
+                  </Button>
+                </div>
+                <Button variant="link" onClick={handleShare} className="h-auto px-0">
+                  Share
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleConvert} disabled={!canConvert || isConverting}>
                   {isConverting ? "Converting..." : "Convert"}
                 </Button>
-                <Button variant="secondary" onClick={handleClear} className="rounded-none h-8 px-3">
+                <Button variant="secondary" onClick={handleClear}>
                   Clear
                 </Button>
-              </div>
-              <Button variant="link" onClick={handleShare} className="h-auto px-0">
-                Share
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button onClick={handleConvert} disabled={!canConvert || isConverting}>
-                {isConverting ? "Converting..." : "Convert"}
-              </Button>
-              <Button variant="secondary" onClick={handleClear}>
-                Clear
-              </Button>
-              <Button variant="outline" onClick={handleShare} className="ml-auto">
-                Share
-              </Button>
-            </>
-          )}
-        </section>
+                <Button variant="outline" onClick={handleShare} className="ml-auto">
+                  Share
+                </Button>
+              </>
+            )}
+          </section>
+        )}
+
+        {variant === "termial" && (
+          <section className="flex justify-end">
+            <button
+              onClick={handleShare}
+              className="text-green-400 hover:text-green-300 font-mono text-sm px-3 py-1 border border-green-400/30 hover:border-green-400/50 bg-black/50 hover:bg-black/70 transition-colors"
+            >
+              [share]
+            </button>
+          </section>
+        )}
 
         {result !== null && (
           <section className="rounded-lg border bg-card">

@@ -21,6 +21,7 @@ export function Terminal() {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const initializedRef = useRef(false);
 
   const addLine = useCallback((type: TerminalLine["type"], content: string) => {
     const newLine: TerminalLine = {
@@ -47,9 +48,12 @@ export function Terminal() {
 
   // Initialize terminal with welcome message
   useEffect(() => {
-    addLine("system", "Everything Converter Terminal v1.0");
-    addLine("system", "Type 'start' to begin conversion, 'help' for commands, 'clear' to reset");
-    addLine("prompt", "");
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      addLine("system", "Everything Converter Terminal v1.0");
+      addLine("system", "Type 'start' to begin conversion, 'help' for commands, 'clear' to reset");
+      addLine("prompt", "");
+    }
   }, [addLine]);
 
   const handleConvert = useCallback(async (from: string, to: string) => {

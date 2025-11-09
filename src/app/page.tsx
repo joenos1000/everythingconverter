@@ -294,8 +294,10 @@ export default function Home() {
           </section>
         )}
 
-        <footer className="pt-6 text-center text-sm text-muted-foreground">
-          built by <a href="https://x.com/realjoecode" className="underline hover:text-foreground" target="_blank" rel="noreferrer">joecode</a>
+        <footer className="pt-6 text-center text-sm">
+          <div className="inline-block px-4 py-2 rounded-lg bg-black/70 backdrop-blur-sm border border-gray-600/50 text-muted-foreground">
+            built by <a href="https://x.com/realjoecode" className="underline hover:text-foreground" target="_blank" rel="noreferrer">joecode</a>
+          </div>
         </footer>
       </main>
     </div>

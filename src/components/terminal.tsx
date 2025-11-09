@@ -5,7 +5,7 @@ import { useAiModel } from "@/hooks/ai-model";
 
 interface TerminalLine {
   id: string;
-  type: "input" | "output" | "system" | "prompt" | "loading";
+  type: "input" | "output" | "system" | "prompt" | "loading" | "result";
   content: string;
   timestamp: Date;
 }
@@ -45,7 +45,7 @@ export function Terminal() {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [lines]); // Focus whenever lines change (including when new prompt is added)
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -135,7 +135,7 @@ export function Terminal() {
 
       if (parsed && (parsed.result || parsed.explanation)) {
         addLine("output", "");
-        addLine("output", `RESULT: ${parsed.result || "N/A"}`);
+        addLine("result", `RESULT: ${parsed.result || "N/A"}`);
         if (parsed.explanation) {
           addLine("output", `EXPLANATION: ${parsed.explanation}`);
         }
@@ -264,6 +264,9 @@ export function Terminal() {
             )}
             {line.type === "output" && (
               <div className="text-green-400">{line.content}</div>
+            )}
+            {line.type === "result" && (
+              <div className="text-pink-500 font-semibold">{line.content}</div>
             )}
             {line.type === "system" && (
               <div className="text-blue-400">{line.content}</div>

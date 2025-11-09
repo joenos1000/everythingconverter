@@ -5,7 +5,7 @@ import { useAiModel } from "@/hooks/ai-model";
 
 interface TerminalLine {
   id: string;
-  type: "input" | "output" | "system" | "prompt";
+  type: "input" | "output" | "system" | "prompt" | "loading";
   content: string;
   timestamp: Date;
 }
@@ -18,6 +18,7 @@ export function Terminal() {
   const [currentInput, setCurrentInput] = useState("");
   const [state, setState] = useState<TerminalState>("idle");
   const [tempFrom, setTempFrom] = useState("");
+  const [loadingFrame, setLoadingFrame] = useState(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -30,7 +31,13 @@ export function Terminal() {
       content,
       timestamp: new Date(),
     };
-    setLines(prev => [...prev, newLine]);
+    setLines(prev => {
+      // Remove any existing prompt lines before adding a new one
+      if (type === "prompt") {
+        return [...prev.filter(line => line.type !== "prompt"), newLine];
+      }
+      return [...prev, newLine];
+    });
   }, []);
 
   // Auto-focus input and scroll to bottom
@@ -56,6 +63,16 @@ export function Terminal() {
     }
   }, [addLine]);
 
+  // Loading animation effect
+  useEffect(() => {
+    if (state === "converting") {
+      const interval = setInterval(() => {
+        setLoadingFrame(prev => (prev + 1) % 4);
+      }, 150);
+      return () => clearInterval(interval);
+    }
+  }, [state]);
+
   const handleConvert = useCallback(async (from: string, to: string) => {
     if (!from.trim() || !to.trim()) {
       addLine("output", "Error: Both 'from' and 'to' values are required");
@@ -63,7 +80,7 @@ export function Terminal() {
     }
 
     setState("converting");
-    addLine("output", `Converting '${from}' to '${to}'...`);
+    addLine("loading", "");
 
     try {
       const messages = [
@@ -129,6 +146,8 @@ export function Terminal() {
       console.error(err);
       addLine("output", "Error: Conversion failed. Check API key or try again.");
     } finally {
+      // Remove loading line
+      setLines(prev => prev.filter(line => line.type !== "loading"));
       setState("idle");
       addLine("prompt", "");
     }
@@ -248,6 +267,12 @@ export function Terminal() {
             )}
             {line.type === "system" && (
               <div className="text-blue-400">{line.content}</div>
+            )}
+            {line.type === "loading" && (
+              <div className="text-yellow-400 flex items-center gap-2">
+                <span>{["⠋", "⠙", "⠹", "⠸"][loadingFrame]}</span>
+                <span>Converting {tempFrom} → {lines.find(l => l.content.includes("To:"))?.content.replace("To: ", "") || "..."}...</span>
+              </div>
             )}
             {line.type === "prompt" && (
               <div className="flex items-center mt-2">

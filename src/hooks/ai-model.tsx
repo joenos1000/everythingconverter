@@ -11,7 +11,7 @@ export type AiModelContextValue = {
 const AiModelContext = createContext<AiModelContextValue | null>(null);
 
 const MODEL_OPTIONS: { label: string; value: string }[] = [
-  { label: "gpt-5", value: "openai/gpt-5" },
+  { label: "gpt-5", value: "openai/gpt-5-chat" },
   { label: "sonnet 4", value: "anthropic/claude-sonnet-4" },
   { label: "sonnet 3.5", value: "anthropic/claude-3.5-sonnet" },
   { label: "gemini 2.5 flash", value: "google/gemini-2.5-flash" },

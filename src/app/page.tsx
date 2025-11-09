@@ -8,6 +8,7 @@ import AsciiTunnelBackground from "@/components/ascii-tunnel-background";
 import { Terminal } from "@/components/terminal";
 import { useUiVariant } from "@/hooks/ui-variant";
 import { useAiModel } from "@/hooks/ai-model";
+import LetterGlitch from "@/components/LetterGlitch";
 
 export default function Home() {
   const { variant } = useUiVariant();
@@ -126,19 +127,32 @@ export default function Home() {
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center p-6">
       {variant === "tunnel" && <AsciiTunnelBackground />}
+      {variant === "termial" && (
+        <div className="fixed inset-0 z-0">
+          <LetterGlitch
+            glitchColors={['#2b4539', '#61dca3', '#61b3dc']}
+            glitchSpeed={50}
+            centerVignette={false}
+            outerVignette={true}
+            smooth={true}
+          />
+        </div>
+      )}
       <main className="relative z-10 w-full max-w-2xl space-y-6">
-        <header className="flex items-center justify-between">
-          {variant === "tunnel" ? (
-            <pre className="w-full text-center m-0 whitespace-pre font-mono leading-none text-primary/90 text-xs sm:text-sm">
-{`▄▖▌               ▗ ▘                  ▗       
-▐ ▛▌█▌  █▌▌▌█▌▛▘▌▌▜▘▌▛▌▛▌  ▛▘▛▌▛▌▌▌█▌▛▘▜▘█▌▛▘  
-▐ ▌▌▙▖  ▙▖▚▘▙▖▌ ▙▌▐▖▌▌▌▙▌  ▙▖▙▌▌▌▚▘▙▖▌ ▐▖▙▖▌   
+        {variant !== "termial" && (
+          <header className="flex items-center justify-between">
+            {variant === "tunnel" ? (
+              <pre className="w-full text-center m-0 whitespace-pre font-mono leading-none text-primary/90 text-xs sm:text-sm">
+{`▄▖▌               ▗ ▘                  ▗
+▐ ▛▌█▌  █▌▌▌█▌▛▘▌▌▜▘▌▛▌▛▌  ▛▘▛▌▛▌▌▌█▌▛▘▜▘█▌▛▘
+▐ ▌▌▙▖  ▙▖▚▘▙▖▌ ▙▌▐▖▌▌▌▙▌  ▙▖▙▌▌▌▚▘▙▖▌ ▐▖▙▖▌
                 ▄▌     ▄▌                      `}
-            </pre>
-          ) : (
-            <h1 className="w-full text-center text-xl font-semibold tracking-tight">The Everything Converter</h1>
-          )}
-        </header>
+              </pre>
+            ) : (
+              <h1 className="w-full text-center text-xl font-semibold tracking-tight">The Everything Converter</h1>
+            )}
+          </header>
+        )}
 
         {variant === "classic" && (
         <section className="space-y-2">

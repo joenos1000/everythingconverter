@@ -224,9 +224,9 @@ export function Terminal() {
   const isInputDisabled = state === "converting";
 
   return (
-    <div className="w-full h-96 border rounded-lg bg-black text-green-400 font-mono text-sm overflow-hidden flex flex-col">
+    <div className="w-full h-96 border rounded-lg bg-black/70 backdrop-blur-sm text-green-400 font-mono text-sm overflow-hidden flex flex-col">
       {/* Terminal Header */}
-      <div className="bg-gray-800 px-3 py-2 border-b border-gray-600 flex items-center gap-2">
+      <div className="bg-gray-800/80 backdrop-blur-sm px-3 py-2 border-b border-gray-600 flex items-center gap-2">
         <div className="w-3 h-3 rounded-full bg-red-500"></div>
         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
         <div className="w-3 h-3 rounded-full bg-green-500"></div>
@@ -234,7 +234,7 @@ export function Terminal() {
       </div>
 
       {/* Terminal Content */}
-      <div 
+      <div
         ref={terminalRef}
         className="flex-1 p-3 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
       >

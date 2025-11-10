@@ -5,7 +5,7 @@ import { useAiModel } from "@/hooks/ai-model";
 
 interface TerminalLine {
   id: string;
-  type: "input" | "output" | "system" | "prompt" | "loading" | "result";
+  type: "input" | "output" | "system" | "prompt" | "loading" | "result" | "explanation";
   content: string;
   timestamp: Date;
 }
@@ -136,8 +136,8 @@ export function Terminal() {
       if (parsed && (parsed.result || parsed.explanation)) {
         addLine("output", "");
         addLine("result", `RESULT: ${parsed.result || "N/A"}`);
-        if (parsed.explanation) {
-          addLine("output", `EXPLANATION: ${parsed.explanation}`);
+if (parsed.explanation) {
+          addLine("explanation", `EXPLANATION: ${parsed.explanation}`);
         }
       } else {
         addLine("output", `RESULT: ${content}`);
@@ -262,8 +262,11 @@ export function Terminal() {
             {line.type === "input" && (
               <div className="text-white">{line.content}</div>
             )}
-            {line.type === "output" && (
+{line.type === "output" && (
               <div className="text-green-400">{line.content}</div>
+            )}
+            {line.type === "explanation" && (
+              <div className="text-blue-300 font-medium">{line.content}</div>
             )}
             {line.type === "result" && (
               <div className="text-pink-500 font-semibold">{line.content}</div>

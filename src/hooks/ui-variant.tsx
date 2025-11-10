@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-export type UiVariant = "classic" | "termial" | "tunnel";
+export type UiVariant = "classic" | "termial" | "tunnel" | "minimal";
 
 type UiVariantContextValue = {
   variant: UiVariant;

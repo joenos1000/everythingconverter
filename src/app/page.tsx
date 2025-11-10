@@ -125,7 +125,9 @@ export default function Home() {
   }, [canConvert, isConverting, handleConvert]);
 
   return (
-    <div className={`min-h-screen w-full flex items-center justify-center p-6 ${
+    <div className={`min-h-screen w-full flex ${
+      variant === "minimal" ? "items-start justify-center pt-[40vh]" : "items-center justify-center"
+    } p-6 ${
       variant === "minimal" ? "bg-gray-900" : "relative"
     }`}>
       {variant === "tunnel" && <AsciiTunnelBackground />}
@@ -229,7 +231,7 @@ export default function Home() {
         )}
 
         {variant === "minimal" && (
-          <section className="space-y-4">
+          <section className="space-y-6">
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <input
@@ -251,21 +253,20 @@ export default function Home() {
                 />
               </div>
             </div>
-            {canConvert && !isConverting && (
-              <div className="flex justify-center">
+            {/* Reserve space for the button to prevent jumping */}
+            <div className="h-12 flex items-center justify-center">
+              {canConvert && !isConverting && (
                 <button
                   onClick={handleConvert}
                   className="px-6 py-2 text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-400 rounded transition-colors"
                 >
                   Convert
                 </button>
-              </div>
-            )}
-            {isConverting && (
-              <div className="flex justify-center">
+              )}
+              {isConverting && (
                 <div className="text-sm text-gray-500">Converting...</div>
-              </div>
-            )}
+              )}
+            </div>
           </section>
         )}
 
@@ -352,14 +353,16 @@ export default function Home() {
           </section>
         )}
 
-<footer className="pt-6 text-center text-sm">
+<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm`}>
           <div className={`inline-block px-4 py-2 rounded-lg text-muted-foreground ${
             variant === "termial"
               ? "bg-black/70 backdrop-blur-sm border border-gray-600/50"
               : ""
           }`}>
             {variant === "minimal" ? (
-              <a href="https://x.com/realjoecode" className="text-gray-500 hover:text-gray-300" target="_blank" rel="noreferrer">joecode</a>
+              <span className="text-gray-500">
+                by <a href="https://x.com/realjoecode" className="hover:text-gray-300" target="_blank" rel="noreferrer">joecode</a>
+              </span>
             ) : (
               <>
                 built by <a href="https://x.com/realjoecode" className="underline hover:text-foreground" target="_blank" rel="noreferrer">joecode</a>

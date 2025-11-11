@@ -18,7 +18,7 @@ const MODEL_OPTIONS: { label: string; value: string }[] = [
 ];
 
 export function AiModelProvider({ children }: { children: React.ReactNode }) {
-  const [selectedModel, setSelectedModel] = useState<string>("choose-a-model");
+  const [selectedModel, setSelectedModel] = useState<string>("openai/gpt-5-chat");
 
   const value = useMemo<AiModelContextValue>(() => ({
     selectedModel,

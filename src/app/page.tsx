@@ -131,7 +131,7 @@ export default function Home() {
       variant === "minimal" ? "bg-gray-900" : "relative"
     }`}>
       {variant === "tunnel" && <AsciiTunnelBackground />}
-      {variant === "termial" && (
+      {variant === "terminal" && (
         <div className="fixed inset-0 z-0">
           <LetterGlitch
             glitchColors={['#2b4539', '#61dca3', '#61b3dc']}
@@ -143,7 +143,7 @@ export default function Home() {
         </div>
       )}
       <main className={`w-full ${variant === "minimal" ? "max-w-lg" : "max-w-2xl"} space-y-6`}>
-        {variant !== "termial" && variant !== "minimal" && (
+        {variant !== "terminal" && variant !== "minimal" && (
           <header className="flex items-center justify-between">
             {variant === "tunnel" ? (
               <pre className="w-full text-center m-0 whitespace-pre font-mono leading-none text-primary/90 text-xs sm:text-sm">
@@ -192,7 +192,7 @@ export default function Home() {
         </section>
         )}
 
-        {variant === "termial" && (
+        {variant === "terminal" && (
           <section className="w-full">
             <Terminal />
           </section>
@@ -270,7 +270,7 @@ export default function Home() {
           </section>
         )}
 
-        {variant !== "termial" && variant !== "minimal" && (
+        {variant !== "terminal" && variant !== "minimal" && (
           <section className={variant === "tunnel" ? "flex flex-col items-center gap-2" : "flex items-center gap-2"}>
             {variant === "tunnel" ? (
               <>
@@ -302,7 +302,7 @@ export default function Home() {
           </section>
         )}
 
-        {variant === "termial" && (
+        {variant === "terminal" && (
           <section className="flex justify-end">
             <button
               onClick={handleShare}
@@ -355,7 +355,7 @@ export default function Home() {
 
 <footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm`}>
           <div className={`inline-block px-4 py-2 rounded-lg text-muted-foreground ${
-            variant === "termial"
+            variant === "terminal"
               ? "bg-black/70 backdrop-blur-sm border border-gray-600/50"
               : ""
           }`}>

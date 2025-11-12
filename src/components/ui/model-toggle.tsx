@@ -13,7 +13,6 @@ export function ModelToggle() {
         value={selectedModel}
         onChange={(e) => setSelectedModel(e.target.value)}
       >
-        <option value="choose-a-model">choose-a-model</option>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

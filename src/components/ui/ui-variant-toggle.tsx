@@ -2,7 +2,7 @@
 
 import { useUiVariant, type UiVariant } from "@/hooks/ui-variant";
 
-const VARIANTS: UiVariant[] = ["classic", "termial", "tunnel", "minimal", "tron"];
+const VARIANTS: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron"];
 
 export function UiVariantToggle() {
   const { variant, setVariant } = useUiVariant();

@@ -293,7 +293,6 @@ if (parsed.explanation) {
                   className="flex-1 bg-transparent border-none outline-none text-white caret-green-400"
                   placeholder={isInputDisabled ? "Processing..." : ""}
                 />
-                <span className="text-green-400 animate-pulse">█</span>
               </div>
             )}
           </div>

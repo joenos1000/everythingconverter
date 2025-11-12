@@ -150,24 +150,24 @@ export default function Home() {
       {variant === "tron" && (
         <div className="fixed inset-0 z-0">
           <GridScan
-            lineThickness={1.5}
-            linesColor="#00ffff"
+            lineThickness={1.0}
+            linesColor="#001a1a"
             scanColor="#00ffff"
-            scanOpacity={0.6}
-            gridScale={0.15}
+            scanOpacity={0.4}
+            gridScale={0.1}
             lineStyle="solid"
             scanDirection="pingpong"
             enablePost={true}
-            bloomIntensity={0.8}
-            bloomThreshold={0.3}
+            bloomIntensity={0.5}
+            bloomThreshold={0.4}
             bloomSmoothing={0.5}
             chromaticAberration={0.003}
             noiseIntensity={0.02}
-            scanGlow={1.2}
+            scanGlow={0.5}
             scanSoftness={2.5}
             scanPhaseTaper={0.15}
             scanDuration={3.0}
-            scanDelay={1.5}
+            scanDelay={2.5}
             sensitivity={0.02}
             className=""
             style={{ width: '100%', height: '100%' }}

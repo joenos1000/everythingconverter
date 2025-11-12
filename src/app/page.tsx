@@ -9,6 +9,7 @@ import { Terminal } from "@/components/terminal";
 import { useUiVariant } from "@/hooks/ui-variant";
 import { useAiModel } from "@/hooks/ai-model";
 import LetterGlitch from "@/components/LetterGlitch";
+import { GridScan } from "@/components/GridScan";
 
 export default function Home() {
   const { variant } = useUiVariant();
@@ -19,12 +20,14 @@ export default function Home() {
   const [result, setResult] = useState<string | null>(null);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [tronStep, setTronStep] = useState<"from" | "to" | "ready">("from");
 
   // Clear results when UI variant changes
   useEffect(() => {
     setResult(null);
     setExplanation(null);
     setIsOpen(false);
+    setTronStep("from");
   }, [variant]);
 
   const canConvert = useMemo(() => fromText.trim() !== "" && toText.trim() !== "", [fromText, toText]);
@@ -103,6 +106,7 @@ export default function Home() {
     setResult(null);
     setExplanation(null);
     setIsOpen(false);
+    setTronStep("from");
   }, []);
 
   const handleShare = useCallback(async () => {
@@ -124,12 +128,52 @@ export default function Home() {
     }
   }, [canConvert, isConverting, handleConvert]);
 
+  const handleTronKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (tronStep === "from" && fromText.trim()) {
+        setTronStep("to");
+      } else if (tronStep === "to" && toText.trim()) {
+        setTronStep("ready");
+        handleConvert();
+      }
+    }
+  }, [tronStep, fromText, toText, handleConvert]);
+
   return (
     <div className={`min-h-screen w-full flex ${
-      variant === "minimal" ? "items-start justify-center pt-[40vh]" : "items-center justify-center"
+      variant === "minimal" ? "items-start justify-center pt-[40vh]" :
+      variant === "tron" ? "items-center justify-center" : "items-center justify-center"
     } p-6 ${
-      variant === "minimal" ? "bg-gray-900" : "relative"
+      variant === "minimal" ? "bg-gray-900" :
+      variant === "tron" ? "bg-black" : "relative"
     }`}>
+      {variant === "tron" && (
+        <div className="fixed inset-0 z-0">
+          <GridScan
+            lineThickness={1.5}
+            linesColor="#00ffff"
+            scanColor="#00ffff"
+            scanOpacity={0.6}
+            gridScale={0.15}
+            lineStyle="solid"
+            scanDirection="pingpong"
+            enablePost={true}
+            bloomIntensity={0.8}
+            bloomThreshold={0.3}
+            bloomSmoothing={0.5}
+            chromaticAberration={0.003}
+            noiseIntensity={0.02}
+            scanGlow={1.2}
+            scanSoftness={2.5}
+            scanPhaseTaper={0.15}
+            scanDuration={3.0}
+            scanDelay={1.5}
+            sensitivity={0.6}
+            className=""
+            style={{ width: '100%', height: '100%' }}
+          />
+        </div>
+      )}
       {variant === "tunnel" && <AsciiTunnelBackground />}
       {variant === "termial" && (
         <div className="fixed inset-0 z-0">
@@ -270,7 +314,63 @@ export default function Home() {
           </section>
         )}
 
-        {variant !== "termial" && variant !== "minimal" && (
+        {variant === "tron" && (
+          <section className="space-y-8 relative z-10">
+            <div className="flex flex-col items-center gap-6">
+              <div className="w-full max-w-2xl">
+                <div className="relative">
+                  <input
+                    value={tronStep === "from" ? fromText : toText}
+                    onChange={(e) => {
+                      if (tronStep === "from") {
+                        setFromText(e.target.value);
+                      } else if (tronStep === "to") {
+                        setToText(e.target.value);
+                      }
+                    }}
+                    onKeyDown={handleTronKeyDown}
+                    placeholder={
+                      tronStep === "from" ? "ENTER SOURCE..." :
+                      tronStep === "to" ? "ENTER TARGET..." :
+                      "CONVERTING..."
+                    }
+                    disabled={isConverting}
+                    className="w-full bg-black/80 backdrop-blur-sm text-cyan-400 text-2xl font-mono px-8 py-6 outline-none border-2 border-cyan-500/50 focus:border-cyan-400 shadow-[0_0_20px_rgba(0,255,255,0.3)] focus:shadow-[0_0_30px_rgba(0,255,255,0.6)] transition-all duration-300 placeholder-cyan-700/50 text-center"
+                    style={{
+                      textShadow: '0 0 10px rgba(0,255,255,0.8)',
+                    }}
+                  />
+                  <div className="absolute -bottom-8 left-0 right-0 text-center text-cyan-500/60 text-sm font-mono">
+                    {tronStep === "from" && fromText && "[PRESS ENTER TO CONTINUE]"}
+                    {tronStep === "to" && toText && "[PRESS ENTER TO CONVERT]"}
+                    {isConverting && "[PROCESSING...]"}
+                  </div>
+                </div>
+              </div>
+              
+              {(fromText || toText) && !isConverting && (
+                <div className="flex gap-4">
+                  <button
+                    onClick={handleClear}
+                    className="px-6 py-2 bg-transparent border border-cyan-500/50 text-cyan-400 font-mono hover:bg-cyan-500/10 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,255,255,0.4)] transition-all duration-300"
+                  >
+                    [RESET]
+                  </button>
+                  {result && (
+                    <button
+                      onClick={handleShare}
+                      className="px-6 py-2 bg-transparent border border-cyan-500/50 text-cyan-400 font-mono hover:bg-cyan-500/10 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,255,255,0.4)] transition-all duration-300"
+                    >
+                      [SHARE]
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {variant !== "termial" && variant !== "minimal" && variant !== "tron" && (
           <section className={variant === "tunnel" ? "flex flex-col items-center gap-2" : "flex items-center gap-2"}>
             {variant === "tunnel" ? (
               <>
@@ -313,7 +413,26 @@ export default function Home() {
           </section>
         )}
 
-        {result !== null && (
+        {result !== null && variant === "tron" && (
+          <section className="relative z-10">
+            <div className="bg-black/80 backdrop-blur-sm border-2 border-cyan-500/50 shadow-[0_0_30px_rgba(0,255,255,0.3)] p-8">
+              <div className="text-cyan-500/70 text-sm font-mono mb-2">[RESULT]</div>
+              <div className="text-cyan-400 text-3xl font-mono mb-6" style={{ textShadow: '0 0 10px rgba(0,255,255,0.8)' }}>
+                {result}
+              </div>
+              {explanation && (
+                <div className="border-t border-cyan-500/30 pt-4">
+                  <div className="text-cyan-500/70 text-sm font-mono mb-2">[EXPLANATION]</div>
+                  <div className="text-cyan-400/80 text-sm font-mono leading-relaxed">
+                    {explanation}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {result !== null && variant !== "tron" && (
           <section>
             {variant === "minimal" ? (
               <div className="space-y-3">
@@ -353,10 +472,12 @@ export default function Home() {
           </section>
         )}
 
-<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm`}>
+<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm ${variant === "tron" ? "relative z-10" : ""}`}>
           <div className={`inline-block px-4 py-2 rounded-lg text-muted-foreground ${
             variant === "termial"
               ? "bg-black/70 backdrop-blur-sm border border-gray-600/50"
+              : variant === "tron"
+              ? "bg-black/70 backdrop-blur-sm border border-cyan-500/30 text-cyan-500/60 font-mono"
               : ""
           }`}>
             {variant === "minimal" ? (

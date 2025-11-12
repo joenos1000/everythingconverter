@@ -168,7 +168,7 @@ export default function Home() {
             scanPhaseTaper={0.15}
             scanDuration={3.0}
             scanDelay={1.5}
-            sensitivity={0.6}
+            sensitivity={0.02}
             className=""
             style={{ width: '100%', height: '100%' }}
           />
@@ -188,7 +188,7 @@ export default function Home() {
       )}
       <main className={`w-full ${variant === "minimal" ? "max-w-lg" : "max-w-2xl"} space-y-6`}>
         {variant !== "terminal" && variant !== "minimal" && (
-          <header className="flex items-center justify-between">
+          <header className="flex items-center justify-between relative z-10">
             {variant === "tunnel" ? (
               <pre className="w-full text-center m-0 whitespace-pre font-mono leading-none text-primary/90 text-xs sm:text-sm">
 {`▄▖▌               ▗ ▘                  ▗
@@ -197,7 +197,7 @@ export default function Home() {
                 ▄▌     ▄▌                      `}
               </pre>
             ) : (
-              <h1 className="w-full text-center text-xl font-semibold tracking-tight">The Everything Converter</h1>
+              <h1 className={`w-full text-center font-semibold tracking-tight ${variant === "tron" ? "font-[family-name:var(--font-tr2n)] text-6xl text-cyan-400 mb-8" : "text-xl"}`} style={variant === "tron" ? { textShadow: '0 0 20px rgba(0,255,255,0.8), 0 0 40px rgba(0,255,255,0.4)' } : {}}>The Everything Converter</h1>
             )}
           </header>
         )}

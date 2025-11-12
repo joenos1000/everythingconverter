@@ -17,10 +17,17 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+const tr2n = localFont({
+  src: "./fonts/Tr2n.ttf",
+  variable: "--font-tr2n",
+});
 
 export const metadata: Metadata = {
   title: "Everything Converter",
   description: "Convert anything into anything",
+  icons: {
+    icon: "/everything-converter-favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -30,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-mono)]`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${tr2n.variable} antialiased font-[family-name:var(--font-geist-mono)]`}>
         <UiVariantProvider>
           <AiModelProvider>
             <UiVariantToggle />

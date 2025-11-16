@@ -53,6 +53,8 @@ export default function Home() {
 
   const canConvert = useMemo(() => fromText.trim() !== "" && toText.trim() !== "", [fromText, toText]);
 
+  const hasInput = useMemo(() => fromText.trim() !== "" || toText.trim() !== "", [fromText, toText]);
+
   const handleConvert = useCallback(async () => {
     if (!canConvert) {
       toast.error("Enter a base and a target");
@@ -319,18 +321,31 @@ export default function Home() {
                 />
               </div>
             </div>
-            {/* Reserve space for the button to prevent jumping */}
-            <div className="h-12 flex items-center justify-center">
-              {canConvert && !isConverting && (
+            <div className="flex flex-col items-center justify-center gap-2">
+              {result !== null ? (
+                <button
+                  onClick={handleShare}
+                  className="px-6 py-2 text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-400 rounded transition-colors"
+                >
+                  Share
+                </button>
+              ) : canConvert && !isConverting ? (
                 <button
                   onClick={handleConvert}
                   className="px-6 py-2 text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-400 rounded transition-colors"
                 >
                   Convert
                 </button>
-              )}
-              {isConverting && (
+              ) : isConverting ? (
                 <div className="text-sm text-gray-500">Converting...</div>
+              ) : null}
+              {hasInput && (
+                <button
+                  onClick={handleClear}
+                  className="text-sm text-gray-400 hover:text-gray-300 underline"
+                >
+                  Clear
+                </button>
               )}
             </div>
           </section>

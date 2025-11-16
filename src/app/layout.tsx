@@ -4,7 +4,7 @@ import "./globals.css";
 import { UiVariantProvider } from "@/hooks/ui-variant";
 import { AiModelProvider } from "@/hooks/ai-model";
 import { UiVariantToggle } from "@/components/ui/ui-variant-toggle";
-import { ModelToggle } from "@/components/ui/model-toggle";
+// import { ModelToggle } from "@/components/ui/model-toggle";
 import { Toaster } from "sonner";
 
 const geistSans = localFont({
@@ -41,7 +41,7 @@ export default function RootLayout({
         <UiVariantProvider>
           <AiModelProvider>
             <UiVariantToggle />
-            <ModelToggle />
+            {/* <ModelToggle /> - Hidden for now, can be re-enabled when needed */}
             {children}
             <Toaster richColors theme="dark" position="top-right" />
           </AiModelProvider>

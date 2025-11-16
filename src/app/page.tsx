@@ -22,6 +22,27 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [tronStep, setTronStep] = useState<"from" | "to" | "ready">("from");
 
+  // Load shared URL parameters on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sharedFrom = urlParams.get('from');
+      const sharedTo = urlParams.get('to');
+      const sharedResult = urlParams.get('result');
+      const sharedExplanation = urlParams.get('explanation');
+
+      if (sharedFrom) setFromText(decodeURIComponent(sharedFrom));
+      if (sharedTo) setToText(decodeURIComponent(sharedTo));
+      if (sharedResult) {
+        setResult(decodeURIComponent(sharedResult));
+        setIsOpen(true);
+      }
+      if (sharedExplanation) {
+        setExplanation(decodeURIComponent(sharedExplanation));
+      }
+    }
+  }, []);
+
   // Clear results when UI variant changes
   useEffect(() => {
     setResult(null);
@@ -112,15 +133,16 @@ export default function Home() {
   const handleShare = useCallback(async () => {
     try {
       const url = new URL(window.location.href);
-      url.searchParams.set("from", fromText);
-      url.searchParams.set("to", toText);
-      if (result) url.searchParams.set("result", result);
+      url.searchParams.set("from", encodeURIComponent(fromText));
+      url.searchParams.set("to", encodeURIComponent(toText));
+      if (result) url.searchParams.set("result", encodeURIComponent(result));
+      if (explanation) url.searchParams.set("explanation", encodeURIComponent(explanation));
       await navigator.clipboard.writeText(url.toString());
       toast.success("Link copied to clipboard");
     } catch {
       toast.error("Could not copy link");
     }
-  }, [fromText, toText, result]);
+  }, [fromText, toText, result, explanation]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && canConvert && !isConverting) {

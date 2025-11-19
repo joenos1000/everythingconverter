@@ -191,7 +191,7 @@ export default function Home() {
       variant === "minimal" ? "items-start justify-center pt-[40vh]" :
       variant === "tron" || variant === "orb" ? "items-center justify-center" : "items-center justify-center"
     } p-6 ${
-      variant === "minimal" ? "bg-gray-900" :
+      variant === "minimal" ? "bg-[#333438]" :
       variant === "tron" ? "bg-black" :
       variant === "orb" ? "bg-[#050a14]" : "relative"
     }`}>
@@ -271,9 +271,6 @@ export default function Home() {
 
         {variant === "classic" && (
         <section className="space-y-2 relative">
-          <div className="absolute top-0 right-0 text-xs text-muted-foreground bg-secondary/80 px-2 py-1 rounded-md border">
-            Try the other themes →
-          </div>
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <label className="text-sm text-muted-foreground">From</label>

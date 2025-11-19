@@ -1,0 +1,14 @@
+.orb-container {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.orb-container canvas {
+  display: block;
+  background: transparent !important;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}

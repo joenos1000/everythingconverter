@@ -10,6 +10,7 @@ import { useUiVariant } from "@/hooks/ui-variant";
 import { useAiModel } from "@/hooks/ai-model";
 import LetterGlitch from "@/components/LetterGlitch";
 import { GridScan } from "@/components/GridScan";
+import Orb from "@/components/Orb";
 
 export default function Home() {
   const { variant } = useUiVariant();
@@ -21,6 +22,15 @@ export default function Home() {
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [tronStep, setTronStep] = useState<"from" | "to" | "ready">("from");
+  const [orbStep, setOrbStep] = useState<"from" | "to" | "ready">("from");
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting("Good morning");
+    else if (hour < 18) setGreeting("Good afternoon");
+    else setGreeting("Good evening");
+  }, []);
 
   // Load shared URL parameters on mount
   useEffect(() => {
@@ -49,6 +59,7 @@ export default function Home() {
     setExplanation(null);
     setIsOpen(false);
     setTronStep("from");
+    setOrbStep("from");
   }, [variant]);
 
   const canConvert = useMemo(() => fromText.trim() !== "" && toText.trim() !== "", [fromText, toText]);
@@ -130,6 +141,7 @@ export default function Home() {
     setExplanation(null);
     setIsOpen(false);
     setTronStep("from");
+    setOrbStep("from");
   }, []);
 
   const handleShare = useCallback(async () => {
@@ -163,14 +175,45 @@ export default function Home() {
     }
   }, [tronStep, fromText, toText, handleConvert]);
 
+  const handleOrbKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (orbStep === "from" && fromText.trim()) {
+        setOrbStep("to");
+      } else if (orbStep === "to" && toText.trim()) {
+        setOrbStep("ready");
+        handleConvert();
+      }
+    }
+  }, [orbStep, fromText, toText, handleConvert]);
+
   return (
     <div className={`min-h-screen w-full flex ${
       variant === "minimal" ? "items-start justify-center pt-[40vh]" :
-      variant === "tron" ? "items-center justify-center" : "items-center justify-center"
+      variant === "tron" || variant === "orb" ? "items-center justify-center" : "items-center justify-center"
     } p-6 ${
       variant === "minimal" ? "bg-gray-900" :
-      variant === "tron" ? "bg-black" : "relative"
+      variant === "tron" ? "bg-black" :
+      variant === "orb" ? "bg-[#050a14]" : "relative"
     }`}>
+      {variant === "orb" && (
+        <div className="fixed inset-0 z-0 flex items-center justify-center">
+          <div className="absolute top-12 left-0 right-0 text-center z-20">
+            <h2 className="text-6xl md:text-7xl text-blue-200/80 font-[family-name:var(--font-instrument-serif)] italic tracking-wide">
+              {greeting}, Sir.
+            </h2>
+          </div>
+          <div className="relative w-[600px] h-[600px] flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 opacity-80">
+              <Orb
+                hue={isConverting ? 20 : 0}
+                hoverIntensity={0.3}
+                forceHoverState={isConverting}
+                enableMouseHover={false}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       {variant === "tron" && (
         <div className="fixed inset-0 z-0">
           <GridScan
@@ -211,7 +254,7 @@ export default function Home() {
         </div>
       )}
       <main className={`w-full ${variant === "minimal" ? "max-w-lg" : "max-w-2xl"} space-y-6`}>
-        {variant !== "terminal" && variant !== "minimal" && (
+        {variant !== "terminal" && variant !== "minimal" && variant !== "orb" && (
           <header className="flex items-center justify-between relative z-10">
             {variant === "tunnel" ? (
               <pre className="w-full text-center m-0 whitespace-pre font-mono leading-none text-primary/90 text-xs sm:text-sm">
@@ -227,7 +270,10 @@ export default function Home() {
         )}
 
         {variant === "classic" && (
-        <section className="space-y-2">
+        <section className="space-y-2 relative">
+          <div className="absolute top-0 right-0 text-xs text-muted-foreground bg-secondary/80 px-2 py-1 rounded-md border">
+            Try the other themes →
+          </div>
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <label className="text-sm text-muted-foreground">From</label>
@@ -351,6 +397,78 @@ export default function Home() {
           </section>
         )}
 
+        {variant === "orb" && (
+          <section className="relative z-10 flex flex-col items-center justify-center min-h-[400px]">
+            {!result ? (
+              <div className="w-full max-w-md space-y-8 animate-in fade-in duration-700">
+                {orbStep === "from" && (
+                  <div className="space-y-2 animate-in slide-in-from-bottom-4 duration-500">
+                    <input
+                      value={fromText}
+                      onChange={(e) => setFromText(e.target.value)}
+                      onKeyDown={handleOrbKeyDown}
+                      placeholder="Input source..."
+                      className="w-full bg-transparent text-center text-blue-100 text-5xl placeholder:text-blue-500/20 outline-none border-none focus:ring-0 transition-all pb-2 font-[family-name:var(--font-instrument-serif)]"
+                      autoFocus
+                    />
+                    <div className={`text-center text-blue-400/40 text-sm font-[family-name:var(--font-instrument-serif)] italic transition-opacity duration-300 ${fromText ? 'opacity-100' : 'opacity-0'}`}>
+                      [Press Enter]
+                    </div>
+                  </div>
+                )}
+                {orbStep === "to" && (
+                  <div className="space-y-2 animate-in slide-in-from-bottom-4 duration-500">
+                    <div className="text-center text-blue-400/60 text-lg font-[family-name:var(--font-instrument-serif)] mb-4">
+                      {fromText} to...
+                    </div>
+                    <input
+                      value={toText}
+                      onChange={(e) => setToText(e.target.value)}
+                      onKeyDown={handleOrbKeyDown}
+                      placeholder="Desired output..."
+                      className="w-full bg-transparent text-center text-blue-100 text-5xl placeholder:text-blue-500/20 outline-none border-none focus:ring-0 transition-all pb-2 font-[family-name:var(--font-instrument-serif)]"
+                      autoFocus
+                    />
+                    <div className={`text-center text-blue-400/40 text-sm font-[family-name:var(--font-instrument-serif)] italic transition-opacity duration-300 ${toText ? 'opacity-100' : 'opacity-0'}`}>
+                      [Press Enter to Initialize]
+                    </div>
+                  </div>
+                )}
+                {isConverting && (
+                  <div className="text-center text-blue-300 text-sm font-[family-name:var(--font-instrument-serif)] tracking-widest animate-pulse">
+                    PROCESSING...
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center space-y-6 animate-in fade-in zoom-in duration-500 max-w-lg">
+                <div className="text-3xl md:text-4xl text-blue-50 font-[family-name:var(--font-instrument-serif)] drop-shadow-sm">
+                  {result}
+                </div>
+                {explanation && (
+                  <div className="text-xl text-blue-200/80 leading-relaxed font-light max-w-md mx-auto font-[family-name:var(--font-instrument-serif)]">
+                    {explanation}
+                  </div>
+                )}
+                <div className="flex gap-6 justify-center pt-8">
+                  <button
+                    onClick={handleClear}
+                    className="text-blue-400/60 hover:text-blue-100 text-xs font-[family-name:var(--font-instrument-serif)] tracking-widest uppercase transition-colors"
+                  >
+                    New Task
+                  </button>
+                  <button
+                    onClick={handleShare}
+                    className="text-blue-400/60 hover:text-blue-100 text-xs font-[family-name:var(--font-instrument-serif)] tracking-widest uppercase transition-colors"
+                  >
+                    Share
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
         {variant === "tron" && (
           <section className="space-y-8 relative z-10">
             <div className="flex flex-col items-center gap-6">
@@ -407,7 +525,7 @@ export default function Home() {
           </section>
         )}
 
-        {variant !== "terminal" && variant !== "minimal" && variant !== "tron" && (
+        {variant !== "terminal" && variant !== "minimal" && variant !== "tron" && variant !== "orb" && (
           <section className={variant === "tunnel" ? "flex flex-col items-center gap-2" : "flex items-center gap-2"}>
             {variant === "tunnel" ? (
               <>
@@ -469,7 +587,7 @@ export default function Home() {
           </section>
         )}
 
-        {result !== null && variant !== "tron" && (
+        {result !== null && variant !== "tron" && variant !== "orb" && (
           <section>
             {variant === "minimal" ? (
               <div className="space-y-3">
@@ -509,17 +627,19 @@ export default function Home() {
           </section>
         )}
 
-<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm ${variant === "tron" ? "relative z-10" : ""}`}>
+<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm ${variant === "tron" ? "relative z-10" : variant === "orb" ? "fixed bottom-6 left-0 right-0 z-10" : ""}`}>
           <div className={`inline-block px-4 py-2 rounded-lg text-muted-foreground ${
             variant === "terminal"
               ? "bg-black/70 backdrop-blur-sm border border-gray-600/50"
               : variant === "tron"
               ? "bg-black/70 backdrop-blur-sm border border-cyan-500/30 text-cyan-500/60 font-mono"
+              : variant === "orb"
+              ? "text-blue-500/40 font-[family-name:var(--font-instrument-serif)]"
               : ""
           }`}>
-            {variant === "minimal" ? (
-              <span className="text-gray-500">
-                by <a href="https://x.com/realjoecode" className="hover:text-gray-300" target="_blank" rel="noreferrer">joecode</a>
+            {variant === "minimal" || variant === "orb" ? (
+              <span className={variant === "orb" ? "text-blue-500/40" : "text-gray-500"}>
+                by <a href="https://x.com/realjoecode" className={variant === "orb" ? "hover:text-blue-300" : "hover:text-white/50"} target="_blank" rel="noreferrer">joecode</a>
               </span>
             ) : (
               <>

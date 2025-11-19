@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { UiVariantProvider } from "@/hooks/ui-variant";
 import { AiModelProvider } from "@/hooks/ai-model";
@@ -22,6 +23,12 @@ const tr2n = localFont({
   variable: "--font-tr2n",
 });
 
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+});
+
 export const metadata: Metadata = {
   title: "Everything Converter",
   description: "Convert anything into anything",
@@ -37,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${tr2n.variable} antialiased font-[family-name:var(--font-geist-mono)]`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${tr2n.variable} ${instrumentSerif.variable} antialiased font-[family-name:var(--font-geist-mono)]`}>
         <UiVariantProvider>
           <AiModelProvider>
             <UiVariantToggle />

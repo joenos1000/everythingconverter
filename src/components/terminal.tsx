@@ -10,7 +10,7 @@ interface TerminalLine {
   timestamp: Date;
 }
 
-type TerminalState = "idle" | "awaiting_from" | "awaiting_to" | "converting";
+type TerminalState = "idle" | "awaiting_from" | "awaiting_to" | "converting" | "generating_surprise";
 
 export function Terminal() {
   const { selectedModel } = useAiModel();
@@ -73,14 +73,14 @@ export function Terminal() {
     }
   }, [state]);
 
-  const handleConvert = useCallback(async (from: string, to: string) => {
+  const handleConvert = useCallback(async (from: string, to: string, suppressPrompt = false) => {
     if (!from.trim() || !to.trim()) {
       addLine("output", "Error: Both 'from' and 'to' values are required");
       return;
     }
 
     setState("converting");
-    addLine("loading", "");
+    addLine("loading", `Converting ${from} -> ${to}...`);
 
     try {
       const messages = [
@@ -148,10 +148,98 @@ if (parsed.explanation) {
     } finally {
       // Remove loading line
       setLines(prev => prev.filter(line => line.type !== "loading"));
+      if (!suppressPrompt) {
+        setState("idle");
+        addLine("prompt", "");
+      }
+    }
+  }, [selectedModel, addLine]);
+
+  const handleSurprise = useCallback(async () => {
+    setState("generating_surprise");
+    addLine("loading", "Generating surprise conversions...");
+
+    try {
+      const messages = [
+        {
+          role: "system",
+          content: 'Generate 2 fun, creative, and simple conversion pairs. Return ONLY strict JSON: [{"from": "string", "to": "string"}, {"from": "string", "to": "string"}]. No extra text.',
+        },
+        {
+          role: "user",
+          content: "Surprise me with 2 fun conversions.",
+        },
+      ];
+
+      const resp = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          messages,
+          temperature: 0.7,
+          model: selectedModel,
+          skipValidation: true
+        }),
+      });
+
+      if (!resp.ok) throw new Error("Failed to generate surprises");
+
+      const data = await resp.json();
+      let content = data.content || "";
+      
+      // Try to find JSON array in the content
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        content = jsonMatch[0];
+      } else {
+        // Fallback cleanup
+        content = content.replace(/^```json\s*/, "").replace(/^```\s*/, "").replace(/```\s*$/, "").trim();
+      }
+
+      let pairs;
+      try {
+        pairs = JSON.parse(content);
+      } catch (e) {
+        console.error("Failed to parse surprise JSON:", content);
+        throw new Error("Invalid JSON response");
+      }
+      
+      // Remove loading line
+      setLines(prev => prev.filter(line => line.type !== "loading"));
+      
+      if (Array.isArray(pairs) && pairs.length > 0) {
+        for (let i = 0; i < pairs.length; i++) {
+          const pair = pairs[i];
+          if (pair.from && pair.to) {
+            addLine("system", `Running: ${pair.from} -> ${pair.to}`);
+            // Suppress prompt for all but the last one
+            await handleConvert(pair.from, pair.to, i < pairs.length - 1);
+            // Small delay between conversions if not the last one
+            if (i < pairs.length - 1) {
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
+        }
+        // Ensure we return to idle state if the last conversion suppressed it (shouldn't happen with logic above, but safe)
+        setState("idle");
+        if (pairs.length > 0) {
+             // The last handleConvert will add the prompt, so we don't need to add it here
+        } else {
+             addLine("prompt", "");
+        }
+      } else {
+        addLine("output", "No surprises generated.");
+        setState("idle");
+        addLine("prompt", "");
+      }
+    } catch (err) {
+      console.error(err);
+      addLine("output", "Error: Failed to generate surprises.");
+      setLines(prev => prev.filter(line => line.type !== "loading"));
       setState("idle");
       addLine("prompt", "");
     }
-  }, [selectedModel, addLine]);
+  }, [selectedModel, addLine, handleConvert]);
 
   const processCommand = useCallback((command: string) => {
     const cmd = command.trim().toLowerCase();
@@ -182,12 +270,17 @@ if (parsed.explanation) {
         addLine("output", "Enter what you want to convert FROM:");
         addLine("prompt", "");
         break;
+
+      case "surprise me":
+        handleSurprise();
+        break;
       
       case "help":
         addLine("output", "Available commands:");
-        addLine("output", "  start  - Begin conversion process");
-        addLine("output", "  clear  - Clear terminal");
-        addLine("output", "  help   - Show this help message");
+        addLine("output", "  start       - Begin conversion process");
+        addLine("output", "  surprise me - Generate and run fun conversions");
+        addLine("output", "  clear       - Clear terminal");
+        addLine("output", "  help        - Show this help message");
         addLine("prompt", "");
         break;
       
@@ -235,12 +328,14 @@ if (parsed.explanation) {
         return "to> ";
       case "converting":
         return "converting> ";
+      case "generating_surprise":
+        return "generating> ";
       default:
         return "$ ";
     }
   };
 
-  const isInputDisabled = state === "converting";
+  const isInputDisabled = state === "converting" || state === "generating_surprise";
 
   return (
     <div className="w-full h-96 border rounded-lg bg-black/70 backdrop-blur-sm text-green-400 font-mono text-sm overflow-hidden flex flex-col">
@@ -277,7 +372,7 @@ if (parsed.explanation) {
             {line.type === "loading" && (
               <div className="text-yellow-400 flex items-center gap-2">
                 <span>{["⠋", "⠙", "⠹", "⠸"][loadingFrame]}</span>
-                <span>Converting {tempFrom} → {lines.find(l => l.content.includes("To:"))?.content.replace("To: ", "") || "..."}...</span>
+                <span>{line.content || `Converting ${tempFrom} → ${lines.find(l => l.content.includes("To:"))?.content.replace("To: ", "") || "..."}...`}</span>
               </div>
             )}
             {line.type === "prompt" && (

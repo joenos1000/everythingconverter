@@ -1,11 +1,17 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useUiVariant, type UiVariant } from "@/hooks/ui-variant";
 
 const VARIANTS: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron", "orb"];
 
 export function UiVariantToggle() {
-  const { variant, setVariant } = useUiVariant();
+  const { variant } = useUiVariant();
+  const router = useRouter();
+
+  const handleVariantChange = (newVariant: UiVariant) => {
+    router.push(`/${newVariant}`);
+  };
 
   return (
     <div className="fixed top-3 right-3 z-50 flex items-center gap-3">
@@ -40,7 +46,7 @@ export function UiVariantToggle() {
         <select
           className="rounded-md border bg-background px-2 py-1 text-sm"
           value={variant}
-          onChange={(e) => setVariant(e.target.value as UiVariant)}
+          onChange={(e) => handleVariantChange(e.target.value as UiVariant)}
         >
           {VARIANTS.map((v) => (
             <option key={v} value={v}>
@@ -52,5 +58,3 @@ export function UiVariantToggle() {
     </div>
   );
 }
-
-

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export type UiVariant = "classic" | "terminal" | "tunnel" | "minimal" | "tron" | "orb";
 
@@ -13,28 +14,28 @@ const UiVariantContext = createContext<UiVariantContextValue | undefined>(undefi
 
 const STORAGE_KEY = "ui-variant";
 
-export function UiVariantProvider({ children }: { children: React.ReactNode }) {
+export function UiVariantProvider({ children, initialVariant }: { children: React.ReactNode; initialVariant?: UiVariant }) {
+  const pathname = usePathname();
   // Always start with a stable default for SSR to avoid hydration mismatch
-  const [variant, setVariant] = useState<UiVariant>("classic");
+  const [variant, setVariant] = useState<UiVariant>(initialVariant || "classic");
 
-  // After mount, load the saved variant and update state
+  // After mount, sync variant from URL path
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem(STORAGE_KEY) as UiVariant | null;
-      if (saved && saved !== variant) {
-        setVariant(saved);
+      // Extract variant from pathname (e.g., "/classic" -> "classic")
+      const pathSegments = pathname.split("/").filter(Boolean);
+      const pathVariant = pathSegments[0] as UiVariant;
+      
+      const validVariants: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron", "orb"];
+      if (pathVariant && validVariants.includes(pathVariant)) {
+        setVariant(pathVariant);
+        // Also save to localStorage for persistence
+        window.localStorage.setItem(STORAGE_KEY, pathVariant);
       }
     } catch {}
     // run only once at mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Persist changes
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, variant);
-    } catch {}
-  }, [variant]);
 
   const value = useMemo(() => ({ variant, setVariant }), [variant]);
 
@@ -48,5 +49,3 @@ export function useUiVariant() {
   }
   return ctx;
 }
-
-

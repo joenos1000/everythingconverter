@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     const stream = Boolean(body?.stream);
     const from = typeof body?.from === "string" ? body.from : undefined;
     const to = typeof body?.to === "string" ? body.to : undefined;
+    const skipValidation = Boolean(body?.skipValidation);
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: "messages[] is required" }), {
@@ -56,26 +57,28 @@ export async function POST(req: NextRequest) {
     let content = nonStreamResponse.choices?.[0]?.message?.content ?? "";
 
     // Second-pass validator to correct inconsistencies
-    const validatorMessages: ChatMessage[] = [
-      {
-        role: "system",
-        content:
-          "You are a strict conversion validator. Ensure the result is numerically and dimensionally consistent with the quantities. If contradictions exist, correct them. Return ONLY JSON {\"result\": string, \"explanation\": string}.",
-      },
-      {
-        role: "user",
-        content: `From: ${from ?? ""}\nTo: ${to ?? ""}\nProposed: ${content}`,
-      },
-    ];
+    if (!skipValidation) {
+      const validatorMessages: ChatMessage[] = [
+        {
+          role: "system",
+          content:
+            "You are a strict conversion validator. Ensure the result is numerically and dimensionally consistent with the quantities. If contradictions exist, correct them. Return ONLY JSON {\"result\": string, \"explanation\": string}.",
+        },
+        {
+          role: "user",
+          content: `From: ${from ?? ""}\nTo: ${to ?? ""}\nProposed: ${content}`,
+        },
+      ];
 
-    try {
-      const validator = await createChatCompletion({ model, messages: validatorMessages, temperature: 0, topP: 0.1, maxTokens: 300, stream: false });
-      const corrected = validator.choices?.[0]?.message?.content ?? "";
-      if (corrected && corrected.trim().length > 0) {
-        content = corrected;
+      try {
+        const validator = await createChatCompletion({ model, messages: validatorMessages, temperature: 0, topP: 0.1, maxTokens: 300, stream: false });
+        const corrected = validator.choices?.[0]?.message?.content ?? "";
+        if (corrected && corrected.trim().length > 0) {
+          content = corrected;
+        }
+      } catch {
+        // If validator fails, fall back to original content
       }
-    } catch {
-      // If validator fails, fall back to original content
     }
 
     return new Response(JSON.stringify({ content, model: nonStreamResponse.model, raw: nonStreamResponse }), {

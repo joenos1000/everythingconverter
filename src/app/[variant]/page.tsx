@@ -23,6 +23,7 @@ export default function VariantPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [tronStep, setTronStep] = useState<"from" | "to" | "ready">("from");
   const [orbStep, setOrbStep] = useState<"from" | "to" | "ready">("from");
+  const [rawStep, setRawStep] = useState<"from" | "to" | "ready">("from");
   const [greeting, setGreeting] = useState("");
 
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function VariantPage() {
     setIsOpen(false);
     setTronStep("from");
     setOrbStep("from");
+    setRawStep("from");
   }, [variant]);
 
   const canConvert = useMemo(() => fromText.trim() !== "" && toText.trim() !== "", [fromText, toText]);
@@ -142,6 +144,7 @@ export default function VariantPage() {
     setIsOpen(false);
     setTronStep("from");
     setOrbStep("from");
+    setRawStep("from");
   }, []);
 
   const handleShare = useCallback(async () => {
@@ -186,13 +189,24 @@ export default function VariantPage() {
     }
   }, [orbStep, fromText, toText, handleConvert]);
 
+  const handleRawKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (rawStep === "from" && fromText.trim()) {
+        setRawStep("to");
+      } else if (rawStep === "to" && toText.trim()) {
+        setRawStep("ready");
+        handleConvert();
+      }
+    }
+  }, [rawStep, fromText, toText, handleConvert]);
+
   return (
     <div className={`min-h-screen w-full flex ${
       variant === "minimal" ? "items-start justify-center pt-[40vh]" :
-      variant === "tron" || variant === "orb" ? "items-center justify-center" : "items-center justify-center"
+      variant === "tron" || variant === "orb" || variant === "raw" ? "items-center justify-center" : "items-center justify-center"
     } p-6 ${
       variant === "minimal" ? "bg-[#333438]" :
-      variant === "tron" ? "bg-black" :
+      variant === "tron" || variant === "raw" ? "bg-black" :
       variant === "orb" ? "bg-[#050a14]" : "relative"
     }`}>
       {variant === "orb" && (
@@ -254,7 +268,7 @@ export default function VariantPage() {
         </div>
       )}
       <main className={`w-full ${variant === "minimal" ? "max-w-lg" : "max-w-2xl"} space-y-6`}>
-        {variant !== "terminal" && variant !== "minimal" && variant !== "orb" && (
+        {variant !== "terminal" && variant !== "minimal" && variant !== "orb" && variant !== "raw" && (
           <header className="flex items-center justify-between relative z-10">
             {variant === "tunnel" ? (
               <pre className="w-full text-center m-0 whitespace-pre font-mono leading-none text-primary/90 text-xs sm:text-sm">
@@ -466,6 +480,78 @@ export default function VariantPage() {
           </section>
         )}
 
+        {variant === "raw" && (
+          <section className="w-full max-w-4xl">
+            <div className="flex flex-col items-center justify-center min-h-screen">
+              {!result ? (
+                <div className="w-full max-w-2xl space-y-8 animate-in fade-in duration-700">
+                  {rawStep === "from" && (
+                    <div className="space-y-2 animate-in slide-in-from-bottom-4 duration-500">
+                      <input
+                        value={fromText}
+                        onChange={(e) => setFromText(e.target.value)}
+                        onKeyDown={handleRawKeyDown}
+                        className="w-full bg-transparent text-white text-6xl text-center outline-none border-none focus:ring-0 font-mono"
+                        autoFocus
+                      />
+                      <div className={`text-center text-gray-600 text-sm font-mono transition-opacity duration-300 ${fromText ? 'opacity-100' : 'opacity-0'}`}>
+                        press enter
+                      </div>
+                    </div>
+                  )}
+                  {rawStep === "to" && (
+                    <div className="space-y-2 animate-in slide-in-from-bottom-4 duration-500">
+                      <div className="text-center text-gray-600 text-lg font-mono mb-4">
+                        {fromText} to
+                      </div>
+                      <input
+                        value={toText}
+                        onChange={(e) => setToText(e.target.value)}
+                        onKeyDown={handleRawKeyDown}
+                        className="w-full bg-transparent text-white text-6xl text-center outline-none border-none focus:ring-0 font-mono"
+                        autoFocus
+                      />
+                      <div className={`text-center text-gray-600 text-sm font-mono transition-opacity duration-300 ${toText ? 'opacity-100' : 'opacity-0'}`}>
+                        press enter to convert
+                      </div>
+                    </div>
+                  )}
+                  {isConverting && (
+                    <div className="text-center text-gray-500 text-sm font-mono">
+                      converting
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center space-y-6 animate-in fade-in zoom-in duration-500 max-w-4xl">
+                  <div className="text-white text-5xl font-mono drop-shadow-sm">
+                    {result}
+                  </div>
+                  {explanation && (
+                    <div className="text-gray-400 text-lg font-mono max-w-2xl mx-auto">
+                      {explanation}
+                    </div>
+                  )}
+                  <div className="flex gap-6 justify-center pt-8">
+                    <button
+                      onClick={handleClear}
+                      className="text-gray-400 hover:text-white text-xs font-mono transition-colors"
+                    >
+                      clear
+                    </button>
+                    <button
+                      onClick={handleShare}
+                      className="text-gray-400 hover:text-white text-xs font-mono transition-colors"
+                    >
+                      share
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {variant === "tron" && (
           <section className="space-y-8 relative z-10">
             <div className="flex flex-col items-center gap-6">
@@ -522,7 +608,7 @@ export default function VariantPage() {
           </section>
         )}
 
-        {variant !== "terminal" && variant !== "minimal" && variant !== "tron" && variant !== "orb" && (
+        {variant !== "terminal" && variant !== "minimal" && variant !== "tron" && variant !== "orb" && variant !== "raw" && (
           <section className={variant === "tunnel" ? "flex flex-col items-center gap-2" : "flex items-center gap-2"}>
             {variant === "tunnel" ? (
               <>
@@ -584,7 +670,7 @@ export default function VariantPage() {
           </section>
         )}
 
-        {result !== null && variant !== "tron" && variant !== "orb" && (
+        {result !== null && variant !== "tron" && variant !== "orb" && variant !== "raw" && (
           <section>
             {variant === "minimal" ? (
               <div className="space-y-3">
@@ -624,19 +710,29 @@ export default function VariantPage() {
           </section>
         )}
 
-<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm ${variant === "tron" ? "relative z-10" : variant === "orb" ? "fixed bottom-6 left-0 right-0 z-10" : ""}`}>
-          <div className={`inline-block px-4 py-2 rounded-lg text-muted-foreground ${
+<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm ${variant === "tron" ? "relative z-10" : variant === "orb" ? "fixed bottom-6 left-0 right-0 z-10" : variant === "raw" ? "fixed bottom-4 right-4" : ""}`}>
+          <div className={`inline-block px-4 py-2 ${
             variant === "terminal"
-              ? "bg-black/70 backdrop-blur-sm border border-gray-600/50"
+              ? "rounded-lg text-muted-foreground bg-black/70 backdrop-blur-sm border border-gray-600/50"
               : variant === "tron"
-              ? "bg-black/70 backdrop-blur-sm border border-cyan-500/30 text-cyan-500/60 font-mono"
+              ? "rounded-lg bg-black/70 backdrop-blur-sm border border-cyan-500/30 text-cyan-500/60 font-mono"
               : variant === "orb"
               ? "text-blue-500/40 font-[family-name:var(--font-instrument-serif)]"
-              : ""
+              : variant === "raw"
+              ? "text-gray-600 font-mono text-xs"
+              : "rounded-lg text-muted-foreground"
           }`}>
-            {variant === "minimal" || variant === "orb" ? (
-              <span className={variant === "orb" ? "text-blue-500/40" : "text-gray-500"}>
-                by <a href="https://x.com/realjoecode" className={variant === "orb" ? "hover:text-blue-300" : "hover:text-white/50"} target="_blank" rel="noreferrer">joecode</a>
+            {variant === "minimal" || variant === "orb" || variant === "raw" ? (
+              <span className={
+                variant === "orb" ? "text-blue-500/40" : 
+                variant === "raw" ? "text-gray-600" : 
+                "text-gray-500"
+              }>
+                by <a href="https://x.com/realjoecode" className={
+                  variant === "orb" ? "hover:text-blue-300" : 
+                  variant === "raw" ? "hover:text-gray-400" : 
+                  "hover:text-white/50"
+                } target="_blank" rel="noreferrer">joecode</a>
               </span>
             ) : (
               <>

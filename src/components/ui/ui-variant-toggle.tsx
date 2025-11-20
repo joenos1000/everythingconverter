@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useUiVariant, type UiVariant } from "@/hooks/ui-variant";
 
-const VARIANTS: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron", "orb"];
+const VARIANTS: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron", "orb", "raw"];
 
 export function UiVariantToggle() {
   const { variant } = useUiVariant();

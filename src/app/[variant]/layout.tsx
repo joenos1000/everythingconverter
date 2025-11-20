@@ -44,6 +44,7 @@ export function generateStaticParams() {
     { variant: "minimal" },
     { variant: "tron" },
     { variant: "orb" },
+    { variant: "raw" },
   ];
 }
 

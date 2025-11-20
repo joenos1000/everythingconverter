@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
-export type UiVariant = "classic" | "terminal" | "tunnel" | "minimal" | "tron" | "orb";
+export type UiVariant = "classic" | "terminal" | "tunnel" | "minimal" | "tron" | "orb" | "raw";
 
 type UiVariantContextValue = {
   variant: UiVariant;
@@ -26,7 +26,7 @@ export function UiVariantProvider({ children, initialVariant }: { children: Reac
       const pathSegments = pathname.split("/").filter(Boolean);
       const pathVariant = pathSegments[0] as UiVariant;
       
-      const validVariants: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron", "orb"];
+      const validVariants: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron", "orb", "raw"];
       if (pathVariant && validVariants.includes(pathVariant)) {
         setVariant(pathVariant);
         // Also save to localStorage for persistence

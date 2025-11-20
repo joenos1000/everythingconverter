@@ -199,7 +199,7 @@ if (parsed.explanation) {
       let pairs;
       try {
         pairs = JSON.parse(content);
-      } catch (e) {
+      } catch {
         console.error("Failed to parse surprise JSON:", content);
         throw new Error("Invalid JSON response");
       }
@@ -302,7 +302,7 @@ if (parsed.explanation) {
         addLine("prompt", "");
         break;
     }
-  }, [state, tempFrom, addLine, handleConvert]);
+  }, [state, tempFrom, addLine, handleConvert, handleSurprise]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter") {

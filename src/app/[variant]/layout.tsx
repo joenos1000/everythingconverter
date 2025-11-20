@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Instrument_Serif } from "next/font/google";
 import "../globals.css";
-import { UiVariantProvider } from "@/hooks/ui-variant";
+import { UiVariantProvider, type UiVariant } from "@/hooks/ui-variant";
 import { AiModelProvider } from "@/hooks/ai-model";
 import { UiVariantToggle } from "@/components/ui/ui-variant-toggle";
 import { Toaster } from "sonner";
@@ -53,12 +53,12 @@ export default function VariantLayout({
   params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { variant: string };
+  params: { variant: UiVariant };
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} ${tr2n.variable} ${instrumentSerif.variable} antialiased font-[family-name:var(--font-geist-mono)]`}>
-        <UiVariantProvider initialVariant={params.variant as any}>
+        <UiVariantProvider initialVariant={params.variant}>
           <AiModelProvider>
             <UiVariantToggle />
             {children}

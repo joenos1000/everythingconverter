@@ -278,7 +278,7 @@ export default function VariantPage() {
                 ▄▌     ▄▌                      `}
               </pre>
             ) : (
-              <h1 className={`w-full text-center font-semibold tracking-tight ${variant === "tron" ? "font-[family-name:var(--font-tr2n)] text-6xl text-cyan-400 mb-8" : "text-xl"}`} style={variant === "tron" ? { textShadow: '0 0 20px rgba(0,255,255,0.8), 0 0 40px rgba(0,255,255,0.4)' } : {}}>The Everything Converter</h1>
+              <h1 className={`w-full text-center font-semibold tracking-tight ${variant === "tron" ? "font-[family-name:var(--font-tr2n)] text-4xl text-cyan-400 mb-8" : "text-xl"}`} style={variant === "tron" ? { textShadow: '0 0 20px rgba(0,255,255,0.8), 0 0 40px rgba(0,255,255,0.4)' } : {}}>The Everything Converter</h1>
             )}
           </header>
         )}

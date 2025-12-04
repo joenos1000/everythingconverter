@@ -62,7 +62,7 @@ export async function createChatCompletion(params: {
     stream = false,
   } = params;
 
-  const defaultModel = process.env.OPENROUTER_MODEL || "openai/gpt-5";
+  const defaultModel = process.env.OPENROUTER_MODEL || "openai/gpt-5.1-chat";
   const isPlaceholderModel = (m?: string) => {
     if (!m) return true;
     const v = m.trim().toLowerCase();

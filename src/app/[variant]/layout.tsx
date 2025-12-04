@@ -5,6 +5,7 @@ import "../globals.css";
 import { UiVariantProvider, type UiVariant } from "@/hooks/ui-variant";
 import { AiModelProvider } from "@/hooks/ai-model";
 import { UiVariantToggle } from "@/components/ui/ui-variant-toggle";
+import { ModelToggle } from "@/components/ui/model-toggle";
 import { Toaster } from "sonner";
 
 const geistSans = localFont({
@@ -60,6 +61,7 @@ export default function VariantLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} ${tr2n.variable} ${instrumentSerif.variable} antialiased font-[family-name:var(--font-geist-mono)]`}>
         <UiVariantProvider initialVariant={params.variant}>
           <AiModelProvider>
+            <ModelToggle />
             <UiVariantToggle />
             {children}
             <Toaster richColors theme="dark" position="top-right" />

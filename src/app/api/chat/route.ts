@@ -1,5 +1,7 @@
 import { NextRequest } from "next/server";
 import { createChatCompletion, type ChatMessage } from "@/lib/server/openrouter";
+import { detectCurrencyConversion, extractAmount, getCurrencyDisplayName } from "@/lib/currency";
+import { convertCurrency } from "@/lib/server/exchange-rates";
 
 export const runtime = "edge";
 
@@ -21,6 +23,54 @@ export async function POST(req: NextRequest) {
         status: 400,
         headers: { "content-type": "application/json" },
       });
+    }
+
+    // Detect currency conversion and fetch real exchange rates
+    let currencyData: string | null = null;
+    if (from && to) {
+      const currencyConversion = detectCurrencyConversion(from, to);
+
+      if (currencyConversion) {
+        try {
+          const amount = extractAmount(from);
+          const exchangeResult = await convertCurrency(
+            amount,
+            currencyConversion.from,
+            currencyConversion.to
+          );
+
+          const fromName = getCurrencyDisplayName(currencyConversion.from);
+          const toName = getCurrencyDisplayName(currencyConversion.to);
+          const rateDate = new Date(exchangeResult.timestamp).toLocaleString();
+
+          currencyData = `
+IMPORTANT: ACTUAL LIVE EXCHANGE RATE DATA (Use this authoritative data for the conversion):
+- Source: ${amount} ${fromName} (${currencyConversion.from})
+- Target: ${toName} (${currencyConversion.to})
+- Current Exchange Rate: 1 ${currencyConversion.from} = ${exchangeResult.rate.toFixed(6)} ${currencyConversion.to}
+- Converted Amount: ${exchangeResult.convertedAmount.toFixed(2)} ${currencyConversion.to}
+- Rate Updated: ${rateDate}
+- Base Currency: ${exchangeResult.base}
+
+You MUST use this actual exchange rate data for the conversion. This is real, current data from Open Exchange Rates API.
+Do NOT make up or estimate exchange rates. Use the provided rate: ${exchangeResult.rate.toFixed(6)}
+`;
+
+          // Prepend currency data to the system message or add it as a new message
+          const systemMessageIndex = messages.findIndex(msg => msg.role === 'system');
+          if (systemMessageIndex !== -1) {
+            messages[systemMessageIndex].content = currencyData + '\n' + messages[systemMessageIndex].content;
+          } else {
+            messages.unshift({
+              role: 'system',
+              content: currencyData,
+            });
+          }
+        } catch (error) {
+          console.error('Failed to fetch exchange rates:', error);
+          // Continue without exchange rate data if fetch fails
+        }
+      }
     }
 
     // No deterministic path: we rely fully on the model

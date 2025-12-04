@@ -1,8 +1,60 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Everything Converter
+
+A universal conversion tool powered by AI that can convert between any units, concepts, or values. Features include:
+
+- **AI-Powered Conversions**: Convert anything using natural language
+- **Live Currency Exchange**: Accurate, real-time currency conversions using Open Exchange Rates API
+- **Multiple UI Variants**: Classic, Terminal, Tron, Orb, Minimal, Tunnel, and Raw interfaces
+- **Smart Detection**: Automatically detects currency conversions and uses live exchange rates
+
+## Environment Setup
+
+Create a `.env` file in the root directory with the following variables:
+
+```bash
+# Required: OpenRouter API key for AI conversions
+OPENROUTER_API_KEY=your_openrouter_api_key
+
+# Required: Open Exchange Rates API key for currency conversions
+# Get your free API key at: https://openexchangerates.org/signup/free
+OPEN_EXCHANGE_RATES_API_KEY=your_api_key_here
+```
+
+### Getting API Keys
+
+1. **OpenRouter API Key**: Sign up at [OpenRouter](https://openrouter.ai/) to get your API key
+2. **Open Exchange Rates API Key**: Sign up for a free account at [Open Exchange Rates](https://openexchangerates.org/signup/free)
+   - Free tier includes 1,000 requests/month with hourly updates
+   - Perfect for personal projects and development
+
+## Currency Conversion
+
+The app automatically detects currency conversions and uses live exchange rates. Supported currencies include:
+
+- **Major currencies**: USD ($), EUR (€), GBP (£), JPY (¥), CHF, CAD, AUD, NZD
+- **Asian currencies**: CNY, INR, KRW, THB, MYR, PHP, IDR, VND
+- **And many more**: 40+ fiat currencies plus BTC and ETH
+
+### Usage Examples
+
+- "100 USD to EUR"
+- "$ to pounds"
+- "1000 yen to dollars"
+- "50 euros to canadian dollars"
+
+The converter will automatically fetch current exchange rates and provide accurate conversions with rate information.
+
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then run the development server:
 
 ```bash
 npm run dev

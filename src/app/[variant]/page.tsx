@@ -11,6 +11,7 @@ import { useAiModel } from "@/hooks/ai-model";
 import LetterGlitch from "@/components/LetterGlitch";
 import dynamic from "next/dynamic";
 import Orb from "@/components/Orb";
+import { SuggestionButtons } from "@/components/suggestion-buttons";
 
 // Dynamic import to avoid SSR issues with face-api.js
 const GridScan = dynamic(() => import("@/components/GridScan").then(mod => ({ default: mod.GridScan })), {
@@ -172,6 +173,10 @@ export default function VariantPage() {
     }
   }, [canConvert, isConverting, handleConvert]);
 
+  const handleSelectSuggestion = useCallback((suggestion: string) => {
+    setToText(suggestion);
+  }, []);
+
   const handleTronKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       if (tronStep === "from" && fromText.trim()) {
@@ -317,6 +322,11 @@ export default function VariantPage() {
                 placeholder="mount everest height"
                 className="mt-1 w-full rounded-md bg-secondary px-3 py-3 outline-none ring-1 ring-transparent focus:ring-ring"
               />
+              <SuggestionButtons
+                fromText={fromText}
+                onSelectSuggestion={handleSelectSuggestion}
+                variant={variant}
+              />
             </div>
           </div>
         </section>
@@ -355,6 +365,11 @@ export default function VariantPage() {
                   placeholder="mount everest height"
                   className="w-full rounded-sm bg-transparent px-3 py-2 outline-none ring-1 ring-transparent focus:ring-ring border border-white/20"
                 />
+                <SuggestionButtons
+                  fromText={fromText}
+                  onSelectSuggestion={handleSelectSuggestion}
+                  variant={variant}
+                />
               </div>
             </div>
           </section>
@@ -380,6 +395,11 @@ export default function VariantPage() {
                   onKeyDown={handleKeyDown}
                   placeholder="to"
                   className="w-full border-0 border-b-2 border-gray-600 bg-transparent px-0 py-3 text-lg text-white outline-none focus:border-white focus:ring-0 placeholder-gray-500"
+                />
+                <SuggestionButtons
+                  fromText={fromText}
+                  onSelectSuggestion={handleSelectSuggestion}
+                  variant={variant}
                 />
               </div>
             </div>
@@ -445,6 +465,13 @@ export default function VariantPage() {
                       className="w-full bg-transparent text-center text-blue-100 text-5xl placeholder:text-blue-500/20 outline-none border-none focus:ring-0 transition-all pb-2 font-[family-name:var(--font-instrument-serif)]"
                       autoFocus
                     />
+                    <div className="flex justify-center">
+                      <SuggestionButtons
+                        fromText={fromText}
+                        onSelectSuggestion={handleSelectSuggestion}
+                        variant={variant}
+                      />
+                    </div>
                     <div className={`text-center text-blue-400/40 text-sm font-[family-name:var(--font-instrument-serif)] italic transition-opacity duration-300 ${toText ? 'opacity-100' : 'opacity-0'}`}>
                       [Press Enter to Initialize]
                     </div>
@@ -516,6 +543,13 @@ export default function VariantPage() {
                         className="w-full bg-transparent text-white text-6xl text-center outline-none border-none focus:ring-0 font-mono"
                         autoFocus
                       />
+                      <div className="flex justify-center">
+                        <SuggestionButtons
+                          fromText={fromText}
+                          onSelectSuggestion={handleSelectSuggestion}
+                          variant={variant}
+                        />
+                      </div>
                       <div className={`text-center text-gray-600 text-sm font-mono transition-opacity duration-300 ${toText ? 'opacity-100' : 'opacity-0'}`}>
                         press enter to convert
                       </div>
@@ -583,6 +617,15 @@ export default function VariantPage() {
                       textShadow: '0 0 10px rgba(0,255,255,0.8)',
                     }}
                   />
+                  {tronStep === "to" && (
+                    <div className="flex justify-center mt-3">
+                      <SuggestionButtons
+                        fromText={fromText}
+                        onSelectSuggestion={handleSelectSuggestion}
+                        variant={variant}
+                      />
+                    </div>
+                  )}
                   <div className="absolute -bottom-8 left-0 right-0 text-center text-cyan-500/60 text-sm font-mono">
                     {tronStep === "from" && fromText && "[PRESS ENTER TO CONTINUE]"}
                     {tronStep === "to" && toText && "[PRESS ENTER TO CONVERT]"}

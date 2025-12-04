@@ -11,15 +11,11 @@ export type AiModelContextValue = {
 const AiModelContext = createContext<AiModelContextValue | null>(null);
 
 const MODEL_OPTIONS: { label: string; value: string }[] = [
-  { label: "GPT OSS 20B", value: "openai/gpt-oss-20b:free" },
-  { label: "GLM 4.5 Air", value: "z-ai/glm-4.5-air:free" },
-  { label: "Qwen3 Coder", value: "qwen/qwen3-coder:free" },
-  { label: "Kimi K2", value: "moonshotai/kimi-k2:free" },
-  { label: "Llama 3.3 70B", value: "meta-llama/llama-3.3-70b-instruct:free" },
+  { label: "GPT-5", value: "openai/gpt-5" },
 ];
 
 export function AiModelProvider({ children }: { children: React.ReactNode }) {
-  const [selectedModel, setSelectedModel] = useState<string>("openai/gpt-oss-20b:free");
+  const [selectedModel, setSelectedModel] = useState<string>("openai/gpt-5");
 
   const value = useMemo<AiModelContextValue>(() => ({
     selectedModel,

@@ -4,12 +4,14 @@ import { useSuggestions } from "@/hooks/use-suggestions";
 
 interface SuggestionButtonsProps {
   fromText: string;
+  toText: string;
   onSelectSuggestion: (suggestion: string) => void;
   variant?: string;
 }
 
 export function SuggestionButtons({
   fromText,
+  toText,
   onSelectSuggestion,
   variant = "classic",
 }: SuggestionButtonsProps) {
@@ -17,6 +19,11 @@ export function SuggestionButtons({
 
   // Don't show anything if there's no input or no suggestions
   if (!fromText || fromText.trim().length === 0) {
+    return null;
+  }
+
+  // Hide suggestions if toText is already filled
+  if (toText && toText.trim().length > 0) {
     return null;
   }
 

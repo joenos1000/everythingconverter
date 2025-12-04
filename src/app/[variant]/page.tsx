@@ -324,6 +324,7 @@ export default function VariantPage() {
               />
               <SuggestionButtons
                 fromText={fromText}
+                toText={toText}
                 onSelectSuggestion={handleSelectSuggestion}
                 variant={variant}
               />
@@ -367,6 +368,7 @@ export default function VariantPage() {
                 />
                 <SuggestionButtons
                   fromText={fromText}
+                  toText={toText}
                   onSelectSuggestion={handleSelectSuggestion}
                   variant={variant}
                 />
@@ -398,6 +400,7 @@ export default function VariantPage() {
                 />
                 <SuggestionButtons
                   fromText={fromText}
+                  toText={toText}
                   onSelectSuggestion={handleSelectSuggestion}
                   variant={variant}
                 />
@@ -468,6 +471,7 @@ export default function VariantPage() {
                     <div className="flex justify-center">
                       <SuggestionButtons
                         fromText={fromText}
+                        toText={toText}
                         onSelectSuggestion={handleSelectSuggestion}
                         variant={variant}
                       />
@@ -546,6 +550,7 @@ export default function VariantPage() {
                       <div className="flex justify-center">
                         <SuggestionButtons
                           fromText={fromText}
+                          toText={toText}
                           onSelectSuggestion={handleSelectSuggestion}
                           variant={variant}
                         />
@@ -621,6 +626,7 @@ export default function VariantPage() {
                     <div className="flex justify-center mt-3">
                       <SuggestionButtons
                         fromText={fromText}
+                        toText={toText}
                         onSelectSuggestion={handleSelectSuggestion}
                         variant={variant}
                       />

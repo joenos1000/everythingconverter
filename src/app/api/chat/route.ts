@@ -28,16 +28,25 @@ export async function POST(req: NextRequest) {
     // Detect currency conversion and fetch real exchange rates
     let currencyData: string | null = null;
     if (from && to) {
+      console.log('[Currency Detection] Checking conversion:', { from, to });
       const currencyConversion = detectCurrencyConversion(from, to);
 
       if (currencyConversion) {
+        console.log('[Currency Detection] ✓ Currency detected:', currencyConversion);
         try {
           const amount = extractAmount(from);
+          console.log('[Currency API] Fetching exchange rate for:', { amount, from: currencyConversion.from, to: currencyConversion.to });
+
           const exchangeResult = await convertCurrency(
             amount,
             currencyConversion.from,
             currencyConversion.to
           );
+
+          console.log('[Currency API] ✓ Exchange rate fetched:', {
+            rate: exchangeResult.rate,
+            convertedAmount: exchangeResult.convertedAmount
+          });
 
           const fromName = getCurrencyDisplayName(currencyConversion.from);
           const toName = getCurrencyDisplayName(currencyConversion.to);
@@ -67,10 +76,14 @@ Do NOT make up or estimate exchange rates. Use the provided rate: ${exchangeResu
             });
           }
         } catch (error) {
-          console.error('Failed to fetch exchange rates:', error);
+          console.error('[Currency API] ✗ Failed to fetch exchange rates:', error);
           // Continue without exchange rate data if fetch fails
         }
+      } else {
+        console.log('[Currency Detection] ✗ No currency detected');
       }
+    } else {
+      console.log('[Currency Detection] Skipped - missing from/to parameters');
     }
 
     // No deterministic path: we rely fully on the model

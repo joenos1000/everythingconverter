@@ -30,6 +30,7 @@ export async function getExchangeRates(): Promise<CachedRates> {
   const apiKey = process.env.OPEN_EXCHANGE_RATES_API_KEY;
 
   if (!apiKey) {
+    console.error('[Exchange Rates] API key not configured');
     throw new Error(
       'OPEN_EXCHANGE_RATES_API_KEY is not set. Get your free API key at https://openexchangerates.org/signup/free'
     );
@@ -37,10 +38,13 @@ export async function getExchangeRates(): Promise<CachedRates> {
 
   // Check cache
   if (cachedRates && Date.now() - cachedRates.timestamp < CACHE_DURATION) {
+    const ageMinutes = Math.floor((Date.now() - cachedRates.timestamp) / (60 * 1000));
+    console.log(`[Exchange Rates] Using cached data (${ageMinutes} minutes old)`);
     return cachedRates;
   }
 
   try {
+    console.log('[Exchange Rates] Fetching fresh data from API...');
     const url = `https://openexchangerates.org/api/latest.json?app_id=${apiKey}`;
     const response = await fetch(url);
 
@@ -68,6 +72,7 @@ export async function getExchangeRates(): Promise<CachedRates> {
       base: data.base,
     };
 
+    console.log(`[Exchange Rates] ✓ Successfully fetched ${Object.keys(data.rates).length} exchange rates (base: ${data.base})`);
     return cachedRates;
   } catch (error) {
     // If fetch fails and we have cached data, return it

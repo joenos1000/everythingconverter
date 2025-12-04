@@ -9,8 +9,13 @@ import { Terminal } from "@/components/terminal";
 import { useUiVariant } from "@/hooks/ui-variant";
 import { useAiModel } from "@/hooks/ai-model";
 import LetterGlitch from "@/components/LetterGlitch";
-import { GridScan } from "@/components/GridScan";
+import dynamic from "next/dynamic";
 import Orb from "@/components/Orb";
+
+// Dynamic import to avoid SSR issues with face-api.js
+const GridScan = dynamic(() => import("@/components/GridScan").then(mod => ({ default: mod.GridScan })), {
+  ssr: false,
+});
 
 export default function VariantPage() {
   const { variant } = useUiVariant();

@@ -5,7 +5,7 @@ import { useAiModel } from "@/hooks/ai-model";
 
 interface TerminalLine {
   id: string;
-  type: "input" | "output" | "system" | "prompt" | "loading" | "result" | "explanation";
+  type: "input" | "output" | "system" | "prompt" | "loading" | "result" | "explanation" | "stats";
   content: string;
   timestamp: Date;
 }
@@ -114,7 +114,7 @@ export function Terminal() {
         throw new Error(errText || `Request failed: ${resp.status}`);
       }
 
-      const data: { content?: string } = await resp.json();
+      const data: { content?: string; stats?: { conversionTime: number; model: string; timestamp: string } } = await resp.json();
       let content = (data?.content || "").trim();
 
       // Try to parse JSON; strip code fences if present
@@ -139,8 +139,14 @@ export function Terminal() {
 if (parsed.explanation) {
           addLine("explanation", `EXPLANATION: ${parsed.explanation}`);
         }
+        if (data?.stats) {
+          addLine("stats", `STATS: conversion_time=${data.stats.conversionTime.toFixed(3)}s | model=${data.stats.model}`);
+        }
       } else {
         addLine("output", `RESULT: ${content}`);
+        if (data?.stats) {
+          addLine("stats", `STATS: conversion_time=${data.stats.conversionTime.toFixed(3)}s | model=${data.stats.model}`);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -362,6 +368,9 @@ if (parsed.explanation) {
             )}
             {line.type === "explanation" && (
               <div className="text-blue-300 font-medium">{line.content}</div>
+            )}
+            {line.type === "stats" && (
+              <div className="text-gray-400 text-xs">{line.content}</div>
             )}
             {line.type === "result" && (
               <div className="text-pink-500 font-semibold">{line.content}</div>

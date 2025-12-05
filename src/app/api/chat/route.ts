@@ -75,6 +75,9 @@ Do NOT make up or estimate exchange rates. Use the provided rate: ${exchangeResu
 
     // No deterministic path: we rely fully on the model
 
+    // Start timing for stats
+    const startTime = performance.now();
+
     if (stream) {
       const streamResponse = await createChatCompletion({ model, messages, temperature, topP, maxTokens, stream: true });
 
@@ -131,7 +134,18 @@ Do NOT make up or estimate exchange rates. Use the provided rate: ${exchangeResu
       }
     }
 
-    return new Response(JSON.stringify({ content, model: nonStreamResponse.model, raw: nonStreamResponse }), {
+    // Calculate conversion time
+    const endTime = performance.now();
+    const conversionTimeMs = endTime - startTime;
+
+    // Stats for nerds
+    const stats = {
+      conversionTime: conversionTimeMs / 1000, // Convert to seconds with full precision
+      model: model || nonStreamResponse.model || "openai/gpt-5.1-chat",
+      timestamp: new Date().toISOString(),
+    };
+
+    return new Response(JSON.stringify({ content, model: nonStreamResponse.model, raw: nonStreamResponse, stats }), {
       status: 200,
       headers: { "content-type": "application/json" },
     });

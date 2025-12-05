@@ -27,6 +27,8 @@ export default function VariantPage() {
   const [result, setResult] = useState<string | null>(null);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [stats, setStats] = useState<{ conversionTime: number; model: string; timestamp: string } | null>(null);
+  const [showStats, setShowStats] = useState(false);
   const [tronStep, setTronStep] = useState<"from" | "to" | "ready">("from");
   const [orbStep, setOrbStep] = useState<"from" | "to" | "ready">("from");
   const [rawStep, setRawStep] = useState<"from" | "to" | "ready">("from");
@@ -106,8 +108,13 @@ export default function VariantPage() {
         throw new Error(errText || `Request failed: ${resp.status}`);
       }
 
-      const data: { content?: string } = await resp.json();
+      const data: { content?: string; stats?: { conversionTime: number; model: string; timestamp: string } } = await resp.json();
       let content = (data?.content || "").trim();
+
+      // Store stats if available
+      if (data?.stats) {
+        setStats(data.stats);
+      }
 
       // Try to parse JSON; strip code fences if present
       const stripFences = (s: string) => {
@@ -148,6 +155,8 @@ export default function VariantPage() {
     setResult(null);
     setExplanation(null);
     setIsOpen(false);
+    setStats(null);
+    setShowStats(false);
     setTronStep("from");
     setOrbStep("from");
     setRawStep("from");
@@ -497,6 +506,23 @@ export default function VariantPage() {
                     {explanation}
                   </div>
                 )}
+                {stats && (
+                  <div className="pt-4">
+                    <button
+                      className="text-blue-400/40 hover:text-blue-300 text-xs font-[family-name:var(--font-instrument-serif)] tracking-widest uppercase transition-colors"
+                      onClick={() => setShowStats((v) => !v)}
+                    >
+                      Stats for Nerds {showStats ? "▼" : "▶"}
+                    </button>
+                    {showStats && (
+                      <div className="mt-3 text-xs font-mono text-blue-400/40 space-y-1">
+                        <div>Conversion time: {stats.conversionTime.toFixed(3)} seconds</div>
+                        <div>Model: {stats.model}</div>
+                        <div>Timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="flex gap-6 justify-center pt-8">
                   <button
                     onClick={handleClear}
@@ -574,6 +600,23 @@ export default function VariantPage() {
                   {explanation && (
                     <div className="text-gray-400 text-lg font-mono max-w-2xl mx-auto">
                       {explanation}
+                    </div>
+                  )}
+                  {stats && (
+                    <div className="pt-4">
+                      <button
+                        className="text-gray-600 hover:text-gray-400 text-xs font-mono transition-colors"
+                        onClick={() => setShowStats((v) => !v)}
+                      >
+                        stats_for_nerds {showStats ? "▼" : "▶"}
+                      </button>
+                      {showStats && (
+                        <div className="mt-3 text-xs font-mono text-gray-600 space-y-1">
+                          <div>conversion_time: {stats.conversionTime.toFixed(3)}s</div>
+                          <div>model: {stats.model}</div>
+                          <div>timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                        </div>
+                      )}
                     </div>
                   )}
                   <div className="flex gap-6 justify-center pt-8">
@@ -720,6 +763,23 @@ export default function VariantPage() {
                   </div>
                 </div>
               )}
+              {stats && (
+                <div className="border-t border-cyan-500/30 pt-4 mt-4">
+                  <button
+                    className="text-cyan-500/70 text-sm font-mono mb-2 hover:text-cyan-400"
+                    onClick={() => setShowStats((v) => !v)}
+                  >
+                    [STATS FOR NERDS] {showStats ? "▼" : "▶"}
+                  </button>
+                  {showStats && (
+                    <div className="text-cyan-400/60 text-xs font-mono space-y-1">
+                      <div>CONVERSION_TIME: {stats.conversionTime.toFixed(3)}s</div>
+                      <div>MODEL: {stats.model}</div>
+                      <div>TIMESTAMP: {new Date(stats.timestamp).toLocaleString()}</div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -734,6 +794,23 @@ export default function VariantPage() {
                 {explanation && (
                   <div className="text-sm text-gray-400">
                     {explanation}
+                  </div>
+                )}
+                {stats && (
+                  <div className="border-t border-gray-700 pt-3 mt-3">
+                    <button
+                      className="text-xs font-mono text-gray-500 hover:text-gray-400"
+                      onClick={() => setShowStats((v) => !v)}
+                    >
+                      Stats for Nerds {showStats ? "▼" : "▶"}
+                    </button>
+                    {showStats && (
+                      <div className="mt-2 text-xs font-mono text-gray-500 space-y-1">
+                        <div>Conversion time: {stats.conversionTime.toFixed(3)} seconds</div>
+                        <div>Model: {stats.model}</div>
+                        <div>Timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -759,6 +836,23 @@ export default function VariantPage() {
                     </div>
                   )}
                 </div>
+                {stats && (
+                  <div className="border-t">
+                    <button
+                      className="w-full text-left px-4 py-3 text-sm hover:bg-secondary/60 font-mono"
+                      onClick={() => setShowStats((v) => !v)}
+                    >
+                      Stats for Nerds
+                    </button>
+                    {showStats && (
+                      <div className="px-4 pb-4 text-xs font-mono text-muted-foreground space-y-1">
+                        <div>Conversion time: {stats.conversionTime.toFixed(3)} seconds</div>
+                        <div>Model: {stats.model}</div>
+                        <div>Timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </section>

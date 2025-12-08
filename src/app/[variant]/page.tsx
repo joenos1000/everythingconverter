@@ -638,9 +638,17 @@ export default function VariantPage() {
               .animate-marquee {
                 animation: marquee 15s linear infinite;
               }
+              @keyframes progress {
+                0% { width: 0%; }
+                50% { width: 75%; }
+                100% { width: 50%; }
+              }
+              .loading-bar {
+                animation: progress 1.5s ease-in-out infinite;
+              }
             `}</style>
             <div className="fixed inset-0 bg-[#5a5a5a] -z-10" />
-            <section className="w-full max-w-xl relative z-10">
+            <section className="w-full max-w-2xl relative z-10">
               {/* Windows XP style window */}
               <div
                 className="rounded-t-lg overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.5)]"
@@ -658,9 +666,9 @@ export default function VariantPage() {
                     <span className="text-white text-sm font-bold drop-shadow-[1px_1px_0px_rgba(0,0,0,0.5)]">The Everything Converter - Internet Explorer</span>
                   </div>
                   <div className="flex gap-1">
-                    <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0]">_</button>
-                    <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0]">□</button>
-                    <button className="w-5 h-5 bg-gradient-to-b from-[#e08080] to-[#c04040] rounded-sm text-white text-xs border border-white/30 hover:from-[#ff9090] hover:to-[#d05050]">×</button>
+                    <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">_</button>
+                    <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">□</button>
+                    <button className="w-5 h-5 bg-gradient-to-b from-[#e08080] to-[#c04040] rounded-sm text-white text-xs border border-white/30 hover:from-[#ff9090] hover:to-[#d05050] active:from-[#d06060] active:to-[#a03030]">×</button>
                   </div>
                 </div>
 
@@ -696,7 +704,7 @@ export default function VariantPage() {
                     </h1>
                     <p className="text-sm text-black">Convert anything into anything - it&apos;s totally rad!</p>
                     <div className="mt-2 flex justify-center gap-2 items-center">
-                      <span className="text-xs text-black font-bold italic">~* Under Construction *~</span>
+                      <span className="text-xs text-black font-bold italic animate-pulse">~* Under Construction *~</span>
                     </div>
                   </div>
 
@@ -775,7 +783,7 @@ export default function VariantPage() {
                   </div>
 
                   {result !== null && (
-                    <div className="mt-6 p-4 bg-[#ffffcc] border-2 border-[#808080]" style={{ borderStyle: 'inset' }}>
+                    <div className="mt-6 p-4 bg-[#ffffcc] border-2 border-[#808080] animate-in fade-in slide-in-from-top-4 duration-500" style={{ borderStyle: 'inset' }}>
                       <div className="text-center">
                         <div className="text-xs text-black mb-1 font-bold">~*~ RESULT ~*~</div>
                         <div className="text-xl font-bold text-[#000080] mb-2" style={{ fontFamily: 'Times New Roman, serif' }}>
@@ -836,16 +844,26 @@ export default function VariantPage() {
                 {/* Status bar */}
                 <div className="bg-[#ece9d8] px-2 py-0.5 border-t border-white flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1 text-black">
-                    <span className="text-green-600">●</span>
-                    <span>Done</span>
+                    <span className={isConverting ? "text-yellow-500" : result !== null ? "text-green-600" : "text-blue-600"}>●</span>
+                    <span>{isConverting ? "Converting..." : result !== null ? "Conversion complete" : "Ready to convert"}</span>
                   </div>
                   <div className="flex items-center gap-2 text-black">
                     <span>Internet</span>
                     <div className="w-16 h-3 bg-white border border-[#808080]" style={{ borderStyle: 'inset' }}>
-                      <div className="h-full bg-[#000080] w-full"></div>
+                      <div
+                        className={`h-full bg-[#000080] transition-all duration-300 ${isConverting ? 'loading-bar' : ''}`}
+                        style={{ width: isConverting ? '50%' : result !== null ? '100%' : '100%' }}
+                      />
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Footer link */}
+              <div className="mt-4 text-center">
+                <a href="https://x.com/realjoecode" target="_blank" rel="noreferrer" className="text-xs text-gray-300 hover:text-white hover:underline">
+                  Contact Webmaster
+                </a>
               </div>
             </section>
           </>

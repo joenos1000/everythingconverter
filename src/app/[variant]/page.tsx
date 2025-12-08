@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AsciiWave } from "@/components/ascii-wave";
@@ -40,6 +40,11 @@ export default function VariantPage() {
   const [tronStep, setTronStep] = useState<"from" | "to" | "ready">("from");
   const [orbStep, setOrbStep] = useState<"from" | "to" | "ready">("from");
   const [rawStep, setRawStep] = useState<"from" | "to" | "ready">("from");
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
+  // Refs for keyboard shortcuts
+  const fromInputRef = useRef<HTMLInputElement>(null);
+  const toInputRef = useRef<HTMLInputElement>(null);
 
   // Load shared URL parameters on mount
   useEffect(() => {
@@ -230,6 +235,69 @@ export default function VariantPage() {
     }
   }, [rawStep, fromText, toText, handleConvert]);
 
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const modKey = isMac ? e.metaKey : e.ctrlKey;
+
+      // Ignore if user is typing in an input (except for Ctrl+Enter)
+      const isInInput = (e.target as HTMLElement)?.tagName === 'INPUT';
+
+      // Ctrl/Cmd + K: Focus "from" input
+      if (modKey && e.key === 'k') {
+        e.preventDefault();
+        fromInputRef.current?.focus();
+        toast.info('Focused "From" input');
+        return;
+      }
+
+      // Ctrl/Cmd + L: Focus "to" input
+      if (modKey && e.key === 'l') {
+        e.preventDefault();
+        toInputRef.current?.focus();
+        toast.info('Focused "To" input');
+        return;
+      }
+
+      // Ctrl/Cmd + Enter: Convert
+      if (modKey && e.key === 'Enter' && canConvert && !isConverting) {
+        e.preventDefault();
+        handleConvert();
+        return;
+      }
+
+      // Escape: Clear all (only if not already empty)
+      if (e.key === 'Escape' && hasInput && !isConverting) {
+        e.preventDefault();
+        handleClear();
+        toast.info('Cleared inputs');
+        return;
+      }
+
+      // Ctrl/Cmd + Shift + C: Copy result to clipboard
+      if (modKey && e.shiftKey && e.key === 'C' && result) {
+        e.preventDefault();
+        navigator.clipboard.writeText(result).then(() => {
+          toast.success('Result copied to clipboard');
+        }).catch(() => {
+          toast.error('Failed to copy result');
+        });
+        return;
+      }
+
+      // ? key: Toggle keyboard shortcuts help (only when not in input)
+      if (e.key === '?' && !isInInput) {
+        e.preventDefault();
+        setShowKeyboardHelp((v) => !v);
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [canConvert, isConverting, hasInput, result, handleConvert, handleClear]);
+
   return (
     <div className={`min-h-screen w-full flex ${
       variant === "minimal" ? "items-start justify-center pt-[40vh]" :
@@ -315,6 +383,7 @@ export default function VariantPage() {
             <div className="flex-1">
               <label className="text-sm text-muted-foreground">From</label>
               <input
+                ref={fromInputRef}
                 value={fromText}
                 onChange={(e) => setFromText(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -332,6 +401,7 @@ export default function VariantPage() {
             <div className="flex-1">
               <label className="text-sm text-muted-foreground">To</label>
               <input
+                ref={toInputRef}
                 value={toText}
                 onChange={(e) => setToText(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -360,6 +430,7 @@ export default function VariantPage() {
             <div className="flex items-end gap-3">
               <div className="flex-1">
                 <input
+                  ref={fromInputRef}
                   value={fromText}
                   onChange={(e) => setFromText(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -376,6 +447,7 @@ export default function VariantPage() {
               </div>
               <div className="flex-1">
                 <input
+                  ref={toInputRef}
                   value={toText}
                   onChange={(e) => setToText(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -398,6 +470,7 @@ export default function VariantPage() {
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <input
+                  ref={fromInputRef}
                   value={fromText}
                   onChange={(e) => setFromText(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -408,6 +481,7 @@ export default function VariantPage() {
               <div className="text-gray-500">→</div>
               <div className="flex-1">
                 <input
+                  ref={toInputRef}
                   value={toText}
                   onChange={(e) => setToText(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -459,6 +533,7 @@ export default function VariantPage() {
                 {orbStep === "from" && (
                   <div className="space-y-2 animate-in slide-in-from-bottom-4 duration-500">
                     <input
+                      ref={fromInputRef}
                       value={fromText}
                       onChange={(e) => setFromText(e.target.value)}
                       onKeyDown={handleOrbKeyDown}
@@ -477,6 +552,7 @@ export default function VariantPage() {
                       {fromText} to...
                     </div>
                     <input
+                      ref={toInputRef}
                       value={toText}
                       onChange={(e) => setToText(e.target.value)}
                       onKeyDown={handleOrbKeyDown}
@@ -577,6 +653,7 @@ export default function VariantPage() {
                   {rawStep === "from" && (
                     <div className="space-y-2 animate-in slide-in-from-bottom-4 duration-500">
                       <input
+                        ref={fromInputRef}
                         value={fromText}
                         onChange={(e) => setFromText(e.target.value)}
                         onKeyDown={handleRawKeyDown}
@@ -594,6 +671,7 @@ export default function VariantPage() {
                         {fromText} to
                       </div>
                       <input
+                        ref={toInputRef}
                         value={toText}
                         onChange={(e) => setToText(e.target.value)}
                         onKeyDown={handleRawKeyDown}
@@ -769,6 +847,7 @@ export default function VariantPage() {
                         <td className="p-3 bg-[#ece9d8] border border-[#808080] text-right font-bold text-sm w-24 text-black">From:</td>
                         <td className="p-2 border border-[#808080] bg-white">
                           <input
+                            ref={fromInputRef}
                             value={fromText}
                             onChange={(e) => setFromText(e.target.value)}
                             onKeyDown={handleKeyDown}
@@ -782,6 +861,7 @@ export default function VariantPage() {
                         <td className="p-3 bg-[#ece9d8] border border-[#808080] text-right font-bold text-sm text-black">To:</td>
                         <td className="p-2 border border-[#808080] bg-white">
                           <input
+                            ref={toInputRef}
                             value={toText}
                             onChange={(e) => setToText(e.target.value)}
                             onKeyDown={handleKeyDown}
@@ -949,6 +1029,7 @@ export default function VariantPage() {
               <div className="w-full max-w-2xl">
                 <div className="relative">
                   <input
+                    ref={tronStep === "from" ? fromInputRef : tronStep === "to" ? toInputRef : null}
                     value={tronStep === "from" ? fromText : toText}
                     onChange={(e) => {
                       if (tronStep === "from") {
@@ -1220,6 +1301,144 @@ export default function VariantPage() {
               </div>
             )}
           </section>
+        )}
+
+        {/* Keyboard shortcuts help button */}
+        {variant !== "y2k" && variant !== "terminal" && (
+          <div className={`${
+            variant === "orb" ? "fixed bottom-20 right-6 z-20" :
+            variant === "raw" ? "fixed bottom-20 right-4 z-20" :
+            variant === "tron" ? "fixed bottom-6 right-6 z-20" :
+            "fixed bottom-6 right-6 z-20"
+          }`}>
+            <button
+              onClick={() => setShowKeyboardHelp((v) => !v)}
+              className={`${
+                variant === "tron"
+                  ? "w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,255,255,0.4)]"
+                  : variant === "orb"
+                  ? "w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400/60 hover:bg-blue-500/20 hover:text-blue-300"
+                  : variant === "raw"
+                  ? "w-10 h-10 rounded-full bg-gray-800 border border-gray-600 text-gray-400 hover:bg-gray-700 hover:text-gray-300"
+                  : variant === "minimal"
+                  ? "w-10 h-10 rounded-full bg-gray-700 border border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-gray-300"
+                  : "w-10 h-10 rounded-full bg-secondary border border-border text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
+              } transition-all duration-200 flex items-center justify-center font-mono text-sm`}
+              title="Keyboard shortcuts (Press ?)"
+            >
+              ?
+            </button>
+          </div>
+        )}
+
+        {/* Keyboard shortcuts help modal */}
+        {showKeyboardHelp && variant !== "y2k" && variant !== "terminal" && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowKeyboardHelp(false)}
+          >
+            <div
+              className={`${
+                variant === "tron"
+                  ? "bg-black/90 border-2 border-cyan-500/50 shadow-[0_0_30px_rgba(0,255,255,0.3)] text-cyan-400"
+                  : variant === "orb"
+                  ? "bg-[#050a14]/95 border border-blue-500/30 text-blue-200"
+                  : variant === "raw"
+                  ? "bg-black/95 border border-gray-600 text-white"
+                  : variant === "minimal"
+                  ? "bg-[#333438]/95 border border-gray-600 text-white"
+                  : "bg-card border border-border"
+              } p-6 rounded-lg max-w-md w-full mx-4`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className={`text-xl font-bold mb-4 ${
+                variant === "tron" ? "font-mono text-cyan-400" :
+                variant === "orb" ? "font-[family-name:var(--font-instrument-serif)] text-blue-100" :
+                variant === "raw" ? "font-mono" :
+                ""
+              }`}>
+                Keyboard Shortcuts
+              </h2>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <kbd className={`px-2 py-1 text-xs rounded ${
+                    variant === "tron" ? "bg-cyan-500/20 border border-cyan-500/40" :
+                    variant === "orb" ? "bg-blue-500/20 border border-blue-500/30" :
+                    variant === "raw" ? "bg-gray-800 border border-gray-600 font-mono" :
+                    variant === "minimal" ? "bg-gray-700 border border-gray-600" :
+                    "bg-secondary border border-border"
+                  }`}>Ctrl/Cmd + K</kbd>
+                  <span className="text-sm">Focus "From" input</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <kbd className={`px-2 py-1 text-xs rounded ${
+                    variant === "tron" ? "bg-cyan-500/20 border border-cyan-500/40" :
+                    variant === "orb" ? "bg-blue-500/20 border border-blue-500/30" :
+                    variant === "raw" ? "bg-gray-800 border border-gray-600 font-mono" :
+                    variant === "minimal" ? "bg-gray-700 border border-gray-600" :
+                    "bg-secondary border border-border"
+                  }`}>Ctrl/Cmd + L</kbd>
+                  <span className="text-sm">Focus "To" input</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <kbd className={`px-2 py-1 text-xs rounded ${
+                    variant === "tron" ? "bg-cyan-500/20 border border-cyan-500/40" :
+                    variant === "orb" ? "bg-blue-500/20 border border-blue-500/30" :
+                    variant === "raw" ? "bg-gray-800 border border-gray-600 font-mono" :
+                    variant === "minimal" ? "bg-gray-700 border border-gray-600" :
+                    "bg-secondary border border-border"
+                  }`}>Ctrl/Cmd + Enter</kbd>
+                  <span className="text-sm">Convert</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <kbd className={`px-2 py-1 text-xs rounded ${
+                    variant === "tron" ? "bg-cyan-500/20 border border-cyan-500/40" :
+                    variant === "orb" ? "bg-blue-500/20 border border-blue-500/30" :
+                    variant === "raw" ? "bg-gray-800 border border-gray-600 font-mono" :
+                    variant === "minimal" ? "bg-gray-700 border border-gray-600" :
+                    "bg-secondary border border-border"
+                  }`}>Escape</kbd>
+                  <span className="text-sm">Clear all inputs</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <kbd className={`px-2 py-1 text-xs rounded ${
+                    variant === "tron" ? "bg-cyan-500/20 border border-cyan-500/40" :
+                    variant === "orb" ? "bg-blue-500/20 border border-blue-500/30" :
+                    variant === "raw" ? "bg-gray-800 border border-gray-600 font-mono" :
+                    variant === "minimal" ? "bg-gray-700 border border-gray-600" :
+                    "bg-secondary border border-border"
+                  }`}>Ctrl/Cmd + Shift + C</kbd>
+                  <span className="text-sm">Copy result</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <kbd className={`px-2 py-1 text-xs rounded ${
+                    variant === "tron" ? "bg-cyan-500/20 border border-cyan-500/40" :
+                    variant === "orb" ? "bg-blue-500/20 border border-blue-500/30" :
+                    variant === "raw" ? "bg-gray-800 border border-gray-600 font-mono" :
+                    variant === "minimal" ? "bg-gray-700 border border-gray-600" :
+                    "bg-secondary border border-border"
+                  }`}>?</kbd>
+                  <span className="text-sm">Toggle this help</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowKeyboardHelp(false)}
+                className={`mt-6 w-full py-2 rounded transition-colors ${
+                  variant === "tron"
+                    ? "bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30"
+                    : variant === "orb"
+                    ? "bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30"
+                    : variant === "raw"
+                    ? "bg-gray-800 border border-gray-600 text-gray-300 hover:bg-gray-700 font-mono"
+                    : variant === "minimal"
+                    ? "bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600"
+                    : "bg-secondary border border-border hover:bg-secondary/80"
+                }`}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         )}
 
 <footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm ${variant === "tron" ? "relative z-10" : variant === "orb" ? "fixed bottom-6 left-0 right-0 z-10" : variant === "raw" ? "fixed bottom-4 right-4" : variant === "y2k" ? "hidden" : ""}`}>

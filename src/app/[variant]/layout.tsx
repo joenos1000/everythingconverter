@@ -46,6 +46,7 @@ export function generateStaticParams() {
     { variant: "tron" },
     { variant: "orb" },
     { variant: "raw" },
+    { variant: "y2k" },
   ];
 }
 

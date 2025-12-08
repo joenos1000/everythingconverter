@@ -218,7 +218,8 @@ export default function VariantPage() {
     } p-6 ${
       variant === "minimal" ? "bg-[#333438]" :
       variant === "tron" || variant === "raw" ? "bg-black" :
-      variant === "orb" ? "bg-[#050a14]" : "relative"
+      variant === "orb" ? "bg-[#050a14]" :
+      variant === "y2k" ? "" : "relative"
     }`}>
       {variant === "orb" && (
         <div className="fixed inset-0 z-0 flex items-center justify-center">
@@ -274,7 +275,7 @@ export default function VariantPage() {
         </div>
       )}
       <main className={`w-full ${variant === "minimal" ? "max-w-lg" : "max-w-2xl"} space-y-6`}>
-        {variant !== "terminal" && variant !== "minimal" && variant !== "orb" && variant !== "raw" && (
+        {variant !== "terminal" && variant !== "minimal" && variant !== "orb" && variant !== "raw" && variant !== "y2k" && (
           <header className="flex items-center justify-between relative z-10">
             {variant === "tunnel" ? (
               <pre className="w-full text-center m-0 whitespace-pre font-mono leading-none text-primary/90 text-xs sm:text-sm">
@@ -626,6 +627,230 @@ export default function VariantPage() {
           </section>
         )}
 
+        {variant === "y2k" && (
+          <>
+            {/* Y2K styles */}
+            <style jsx>{`
+              @keyframes marquee {
+                0% { transform: translateX(100%); }
+                100% { transform: translateX(-100%); }
+              }
+              .animate-marquee {
+                animation: marquee 15s linear infinite;
+              }
+            `}</style>
+            <div className="fixed inset-0 bg-[#5a5a5a] -z-10" />
+            <section className="w-full max-w-xl relative z-10">
+              {/* Windows XP style window */}
+              <div
+                className="rounded-t-lg overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.5)]"
+                style={{ fontFamily: 'Tahoma, Verdana, sans-serif' }}
+              >
+                {/* Title bar - Windows XP blue gradient */}
+                <div
+                  className="px-3 py-1.5 flex items-center justify-between"
+                  style={{
+                    background: 'linear-gradient(180deg, #0a246a 0%, #0f3da3 8%, #1d5fc0 40%, #2b71d0 88%, #245edb 93%, #1941a5 95%, #0f2f6c 100%)',
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-[#f0f0f0] rounded-sm flex items-center justify-center text-[10px] font-bold text-[#0a246a]">E</div>
+                    <span className="text-white text-sm font-bold drop-shadow-[1px_1px_0px_rgba(0,0,0,0.5)]">The Everything Converter - Internet Explorer</span>
+                  </div>
+                  <div className="flex gap-1">
+                    <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0]">_</button>
+                    <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0]">□</button>
+                    <button className="w-5 h-5 bg-gradient-to-b from-[#e08080] to-[#c04040] rounded-sm text-white text-xs border border-white/30 hover:from-[#ff9090] hover:to-[#d05050]">×</button>
+                  </div>
+                </div>
+
+                {/* Toolbar */}
+                <div className="bg-[#ece9d8] px-2 py-1 border-b border-[#aca899] flex items-center gap-2">
+                  <span className="text-xs text-[#000080] underline cursor-pointer hover:text-[#ff0000]">File</span>
+                  <span className="text-xs text-[#000080] underline cursor-pointer hover:text-[#ff0000]">Edit</span>
+                  <span className="text-xs text-[#000080] underline cursor-pointer hover:text-[#ff0000]">View</span>
+                  <span className="text-xs text-[#000080] underline cursor-pointer hover:text-[#ff0000]">Favorites</span>
+                  <span className="text-xs text-[#000080] underline cursor-pointer hover:text-[#ff0000]">Tools</span>
+                  <span className="text-xs text-[#000080] underline cursor-pointer hover:text-[#ff0000]">Help</span>
+                </div>
+
+                {/* Address bar */}
+                <div className="bg-[#ece9d8] px-2 py-1 border-b border-[#aca899] flex items-center gap-2">
+                  <span className="text-xs text-black">Address</span>
+                  <div className="flex-1 bg-white border-2 px-2 py-0.5 text-xs text-black" style={{ borderStyle: 'inset' }}>
+                    http://www.everything-converter.com/y2k
+                  </div>
+                  <button
+                    className="px-2 py-0.5 text-xs bg-[#ece9d8] border-2 text-black"
+                    style={{ borderStyle: 'outset', borderColor: '#fff #808080 #808080 #fff' }}
+                  >
+                    Go
+                  </button>
+                </div>
+
+                {/* Main content area */}
+                <div className="bg-white p-6 min-h-[300px]" style={{ borderStyle: 'inset', borderWidth: '2px', borderColor: '#808080 #fff #fff #808080' }}>
+                  <div className="text-center mb-6">
+                    <h1 className="text-2xl font-bold text-[#000080] mb-1" style={{ fontFamily: 'Times New Roman, serif' }}>
+                      Welcome to The Everything Converter!
+                    </h1>
+                    <p className="text-sm text-black">Convert anything into anything - it&apos;s totally rad!</p>
+                    <div className="mt-2 flex justify-center gap-2 items-center">
+                      <span className="text-xs text-black font-bold italic">~* Under Construction *~</span>
+                    </div>
+                  </div>
+
+                  <table className="w-full border-collapse" style={{ borderWidth: '2px', borderStyle: 'outset' }}>
+                    <tbody>
+                      <tr>
+                        <td className="p-3 bg-[#ece9d8] border border-[#808080] text-right font-bold text-sm w-24 text-black">From:</td>
+                        <td className="p-2 border border-[#808080] bg-white">
+                          <input
+                            value={fromText}
+                            onChange={(e) => setFromText(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Enter value here..."
+                            className="w-full px-2 py-1 text-sm bg-white outline-none text-black placeholder:text-gray-500"
+                            style={{ border: '2px inset #808080' }}
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 bg-[#ece9d8] border border-[#808080] text-right font-bold text-sm text-black">To:</td>
+                        <td className="p-2 border border-[#808080] bg-white">
+                          <input
+                            value={toText}
+                            onChange={(e) => setToText(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Enter target here..."
+                            className="w-full px-2 py-1 text-sm bg-white outline-none text-black placeholder:text-gray-500"
+                            style={{ border: '2px inset #808080' }}
+                          />
+                          <SuggestionButtons
+                            fromText={fromText}
+                            toText={toText}
+                            onSelectSuggestion={handleSelectSuggestion}
+                            variant={variant}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div className="mt-4 flex justify-center gap-3">
+                    <button
+                      onClick={handleConvert}
+                      disabled={!canConvert || isConverting}
+                      className="px-4 py-1 text-sm font-bold disabled:opacity-50 text-black active:translate-y-px"
+                      style={{
+                        background: 'linear-gradient(180deg, #fff 0%, #ece9d8 50%, #d4d0c8 100%)',
+                        border: '2px outset #d4d0c8',
+                        fontFamily: 'Tahoma, sans-serif'
+                      }}
+                    >
+                      {isConverting ? "Converting..." : "Convert!"}
+                    </button>
+                    <button
+                      onClick={handleClear}
+                      className="px-4 py-1 text-sm text-black active:translate-y-px"
+                      style={{
+                        background: 'linear-gradient(180deg, #fff 0%, #ece9d8 50%, #d4d0c8 100%)',
+                        border: '2px outset #d4d0c8',
+                        fontFamily: 'Tahoma, sans-serif'
+                      }}
+                    >
+                      Clear
+                    </button>
+                    <button
+                      onClick={handleShare}
+                      className="px-4 py-1 text-sm text-black active:translate-y-px"
+                      style={{
+                        background: 'linear-gradient(180deg, #fff 0%, #ece9d8 50%, #d4d0c8 100%)',
+                        border: '2px outset #d4d0c8',
+                        fontFamily: 'Tahoma, sans-serif'
+                      }}
+                    >
+                      Share
+                    </button>
+                  </div>
+
+                  {result !== null && (
+                    <div className="mt-6 p-4 bg-[#ffffcc] border-2 border-[#808080]" style={{ borderStyle: 'inset' }}>
+                      <div className="text-center">
+                        <div className="text-xs text-black mb-1 font-bold">~*~ RESULT ~*~</div>
+                        <div className="text-xl font-bold text-[#000080] mb-2" style={{ fontFamily: 'Times New Roman, serif' }}>
+                          {result}
+                        </div>
+                        {explanation && (
+                          <div className="text-sm text-black border-t border-[#808080] pt-2 mt-2">
+                            {explanation}
+                          </div>
+                        )}
+                        {stats && (
+                          <div className="mt-3 pt-2 border-t border-dashed border-[#808080]">
+                            <button
+                              className="text-xs text-[#0000EE] underline hover:text-[#ff0000]"
+                              onClick={() => setShowStats((v) => !v)}
+                            >
+                              [Stats for Nerds] {showStats ? "[-]" : "[+]"}
+                            </button>
+                            {showStats && (
+                              <div className="mt-2 text-xs text-black text-left bg-white p-2" style={{ border: '1px solid #808080', fontFamily: 'Courier New, monospace' }}>
+                                <div>Conversion time: {stats.conversionTime.toFixed(3)} seconds</div>
+                                <div>Model: {stats.model}</div>
+                                <div>Timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-6 text-center">
+                    <p className="text-xs text-black">
+                      Best viewed in Internet Explorer 6.0 at 800x600 resolution
+                    </p>
+                    <p className="text-xs text-black mt-1">
+                      <span className="text-[#0000EE] underline cursor-pointer hover:text-[#ff0000]">Sign my guestbook!</span> |
+                      <span className="text-[#0000EE] underline cursor-pointer hover:text-[#ff0000] ml-1">Add to favorites</span> |
+                      <span className="text-[#0000EE] underline cursor-pointer hover:text-[#ff0000] ml-1">Email webmaster</span>
+                    </p>
+                    <div className="mt-3 flex justify-center gap-4">
+                      <div className="border-2 border-[#808080] p-1 bg-[#c0c0c0]" style={{ borderStyle: 'outset' }}>
+                        <div className="text-[10px] text-black font-bold">NETSCAPE</div>
+                        <div className="text-[8px] text-black">NOW!</div>
+                      </div>
+                      <div className="border-2 border-[#808080] p-1 bg-[#c0c0c0]" style={{ borderStyle: 'outset' }}>
+                        <div className="text-[10px] text-black font-bold">Made with</div>
+                        <div className="text-[8px] text-[#ff0000]">Notepad</div>
+                      </div>
+                      <div className="border-2 border-[#808080] p-1 bg-[#c0c0c0]" style={{ borderStyle: 'outset' }}>
+                        <div className="text-[10px] text-black font-bold">Y2K</div>
+                        <div className="text-[8px] text-black">COMPLIANT</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status bar */}
+                <div className="bg-[#ece9d8] px-2 py-0.5 border-t border-white flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1 text-black">
+                    <span className="text-green-600">●</span>
+                    <span>Done</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-black">
+                    <span>Internet</span>
+                    <div className="w-16 h-3 bg-white border border-[#808080]" style={{ borderStyle: 'inset' }}>
+                      <div className="h-full bg-[#000080] w-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+
         {variant === "tron" && (
           <section className="space-y-8 relative z-10">
             <div className="flex flex-col items-center gap-6">
@@ -692,7 +917,7 @@ export default function VariantPage() {
           </section>
         )}
 
-        {variant !== "terminal" && variant !== "minimal" && variant !== "tron" && variant !== "orb" && variant !== "raw" && (
+        {variant !== "terminal" && variant !== "minimal" && variant !== "tron" && variant !== "orb" && variant !== "raw" && variant !== "y2k" && (
           <section className={variant === "tunnel" ? "flex flex-col items-center gap-2" : "flex items-center gap-2"}>
             {variant === "tunnel" ? (
               <>
@@ -771,7 +996,7 @@ export default function VariantPage() {
           </section>
         )}
 
-        {result !== null && variant !== "tron" && variant !== "orb" && variant !== "raw" && (
+        {result !== null && variant !== "tron" && variant !== "orb" && variant !== "raw" && variant !== "y2k" && (
           <section>
             {variant === "minimal" ? (
               <div className="space-y-3">
@@ -845,7 +1070,7 @@ export default function VariantPage() {
           </section>
         )}
 
-<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm ${variant === "tron" ? "relative z-10" : variant === "orb" ? "fixed bottom-6 left-0 right-0 z-10" : variant === "raw" ? "fixed bottom-4 right-4" : ""}`}>
+<footer className={`${variant === "minimal" ? "pt-4" : "pt-6"} text-center text-sm ${variant === "tron" ? "relative z-10" : variant === "orb" ? "fixed bottom-6 left-0 right-0 z-10" : variant === "raw" ? "fixed bottom-4 right-4" : variant === "y2k" ? "hidden" : ""}`}>
           <div className={`inline-block px-4 py-2 ${
             variant === "terminal"
               ? "rounded-lg text-muted-foreground bg-black/70 backdrop-blur-sm border border-gray-600/50"

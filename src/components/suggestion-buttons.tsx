@@ -59,6 +59,8 @@ export function SuggestionButtons({
         return `${baseClasses} bg-purple-900/20 text-purple-300 border border-purple-500/30 hover:bg-purple-900/40 hover:border-purple-400 font-serif`;
       case "raw":
         return `${baseClasses} bg-orange-900/20 text-orange-300 border border-orange-500/30 hover:bg-orange-900/40 hover:border-orange-400 font-mono`;
+      case "y2k":
+        return `px-1 py-0 text-xs text-[#0000EE] underline hover:text-[#551A8B] cursor-pointer visited:text-[#551A8B]`;
       default:
         return `${baseClasses} bg-blue-500/10 text-blue-600 border border-blue-300/50 hover:bg-blue-500/20 hover:border-blue-400`;
     }
@@ -73,6 +75,8 @@ export function SuggestionButtons({
       case "orb":
       case "raw":
         return `${baseClasses} animate-fade-in`;
+      case "y2k":
+        return `${baseClasses} text-[11px]`;
       default:
         return baseClasses;
     }

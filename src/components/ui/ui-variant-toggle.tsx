@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useUiVariant, type UiVariant } from "@/hooks/ui-variant";
 import { useState, useEffect } from "react";
 
-const VARIANTS: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron", "orb", "raw"];
+const VARIANTS: UiVariant[] = ["classic", "terminal", "tunnel", "minimal", "tron", "orb", "raw", "y2k"];
 
 export function UiVariantToggle() {
   const { variant } = useUiVariant();

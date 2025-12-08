@@ -32,14 +32,6 @@ export default function VariantPage() {
   const [tronStep, setTronStep] = useState<"from" | "to" | "ready">("from");
   const [orbStep, setOrbStep] = useState<"from" | "to" | "ready">("from");
   const [rawStep, setRawStep] = useState<"from" | "to" | "ready">("from");
-  const [greeting, setGreeting] = useState("");
-
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) setGreeting("Good morning");
-    else if (hour < 18) setGreeting("Good afternoon");
-    else setGreeting("Good evening");
-  }, []);
 
   // Load shared URL parameters on mount
   useEffect(() => {
@@ -230,11 +222,6 @@ export default function VariantPage() {
     }`}>
       {variant === "orb" && (
         <div className="fixed inset-0 z-0 flex items-center justify-center">
-          <div className="absolute top-12 left-0 right-0 text-center z-20">
-            <h2 className="text-6xl md:text-7xl text-blue-200/80 font-[family-name:var(--font-instrument-serif)] italic tracking-wide">
-              {greeting}, Sir.
-            </h2>
-          </div>
           <div className="relative w-[600px] h-[600px] flex items-center justify-center pointer-events-none">
             <div className="absolute inset-0 opacity-80">
               <Orb

@@ -27,7 +27,15 @@ export default function VariantPage() {
   const [result, setResult] = useState<string | null>(null);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [stats, setStats] = useState<{ conversionTime: number; model: string; timestamp: string } | null>(null);
+  const [stats, setStats] = useState<{
+    conversionTime: number;
+    model: string;
+    timestamp: string;
+    usage?: { promptTokens: number; completionTokens: number; totalTokens: number } | null;
+    estimatedCost?: number | null;
+    estimatedWaterUsage?: number | null;
+    currencyInfo?: { from: string; to: string; rate: number; amount: number } | null;
+  } | null>(null);
   const [showStats, setShowStats] = useState(false);
   const [tronStep, setTronStep] = useState<"from" | "to" | "ready">("from");
   const [orbStep, setOrbStep] = useState<"from" | "to" | "ready">("from");
@@ -100,7 +108,18 @@ export default function VariantPage() {
         throw new Error(errText || `Request failed: ${resp.status}`);
       }
 
-      const data: { content?: string; stats?: { conversionTime: number; model: string; timestamp: string } } = await resp.json();
+      const data: {
+        content?: string;
+        stats?: {
+          conversionTime: number;
+          model: string;
+          timestamp: string;
+          usage?: { promptTokens: number; completionTokens: number; totalTokens: number } | null;
+          estimatedCost?: number | null;
+          estimatedWaterUsage?: number | null;
+          currencyInfo?: { from: string; to: string; rate: number; amount: number } | null;
+        };
+      } = await resp.json();
       let content = (data?.content || "").trim();
 
       // Store stats if available
@@ -507,6 +526,26 @@ export default function VariantPage() {
                         <div>Conversion time: {stats.conversionTime.toFixed(3)} seconds</div>
                         <div>Model: {stats.model}</div>
                         <div>Timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                        {stats.usage && (
+                          <>
+                            <div className="pt-1 border-t border-blue-400/20 mt-2" />
+                            <div>Tokens: {stats.usage.totalTokens.toLocaleString()} total</div>
+                            <div className="pl-2">↳ Input: {stats.usage.promptTokens.toLocaleString()}</div>
+                            <div className="pl-2">↳ Output: {stats.usage.completionTokens.toLocaleString()}</div>
+                          </>
+                        )}
+                        {stats.estimatedCost !== null && stats.estimatedCost !== undefined && (
+                          <div>Cost: ${stats.estimatedCost.toFixed(6)}</div>
+                        )}
+                        {stats.estimatedWaterUsage !== null && stats.estimatedWaterUsage !== undefined && (
+                          <div>Water: ~{stats.estimatedWaterUsage.toFixed(2)}L</div>
+                        )}
+                        {stats.currencyInfo && (
+                          <>
+                            <div className="pt-1 border-t border-blue-400/20 mt-2" />
+                            <div>Exchange rate: 1 {stats.currencyInfo.from} = {stats.currencyInfo.rate.toFixed(6)} {stats.currencyInfo.to}</div>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -603,6 +642,22 @@ export default function VariantPage() {
                           <div>conversion_time: {stats.conversionTime.toFixed(3)}s</div>
                           <div>model: {stats.model}</div>
                           <div>timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                          {stats.usage && (
+                            <>
+                              <div>tokens: {stats.usage.totalTokens.toLocaleString()}</div>
+                              <div>  input: {stats.usage.promptTokens.toLocaleString()}</div>
+                              <div>  output: {stats.usage.completionTokens.toLocaleString()}</div>
+                            </>
+                          )}
+                          {stats.estimatedCost !== null && stats.estimatedCost !== undefined && (
+                            <div>cost: ${stats.estimatedCost.toFixed(6)}</div>
+                          )}
+                          {stats.estimatedWaterUsage !== null && stats.estimatedWaterUsage !== undefined && (
+                            <div>water: ~{stats.estimatedWaterUsage.toFixed(2)}L</div>
+                          )}
+                          {stats.currencyInfo && (
+                            <div>exchange_rate: 1 {stats.currencyInfo.from} = {stats.currencyInfo.rate.toFixed(6)} {stats.currencyInfo.to}</div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -807,6 +862,25 @@ export default function VariantPage() {
                                 <div>Conversion time: {stats.conversionTime.toFixed(3)} seconds</div>
                                 <div>Model: {stats.model}</div>
                                 <div>Timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                                {stats.usage && (
+                                  <>
+                                    <div className="mt-2 pt-2 border-t border-[#808080]">Token Usage:</div>
+                                    <div>  Total: {stats.usage.totalTokens.toLocaleString()}</div>
+                                    <div>  Input: {stats.usage.promptTokens.toLocaleString()}</div>
+                                    <div>  Output: {stats.usage.completionTokens.toLocaleString()}</div>
+                                  </>
+                                )}
+                                {stats.estimatedCost !== null && stats.estimatedCost !== undefined && (
+                                  <div className="mt-1">Est. Cost: ${stats.estimatedCost.toFixed(6)}</div>
+                                )}
+                                {stats.estimatedWaterUsage !== null && stats.estimatedWaterUsage !== undefined && (
+                                  <div>Water Usage: ~{stats.estimatedWaterUsage.toFixed(2)} liters</div>
+                                )}
+                                {stats.currencyInfo && (
+                                  <div className="mt-2 pt-2 border-t border-[#808080]">
+                                    Exchange Rate: 1 {stats.currencyInfo.from} = {stats.currencyInfo.rate.toFixed(6)} {stats.currencyInfo.to}
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -1006,6 +1080,26 @@ export default function VariantPage() {
                       <div>CONVERSION_TIME: {stats.conversionTime.toFixed(3)}s</div>
                       <div>MODEL: {stats.model}</div>
                       <div>TIMESTAMP: {new Date(stats.timestamp).toLocaleString()}</div>
+                      {stats.usage && (
+                        <>
+                          <div className="pt-2 mt-2 border-t border-cyan-500/20" />
+                          <div>TOKENS_TOTAL: {stats.usage.totalTokens.toLocaleString()}</div>
+                          <div>TOKENS_INPUT: {stats.usage.promptTokens.toLocaleString()}</div>
+                          <div>TOKENS_OUTPUT: {stats.usage.completionTokens.toLocaleString()}</div>
+                        </>
+                      )}
+                      {stats.estimatedCost !== null && stats.estimatedCost !== undefined && (
+                        <div>ESTIMATED_COST: ${stats.estimatedCost.toFixed(6)}</div>
+                      )}
+                      {stats.estimatedWaterUsage !== null && stats.estimatedWaterUsage !== undefined && (
+                        <div>WATER_USAGE: ~{stats.estimatedWaterUsage.toFixed(2)}L</div>
+                      )}
+                      {stats.currencyInfo && (
+                        <>
+                          <div className="pt-2 mt-2 border-t border-cyan-500/20" />
+                          <div>EXCHANGE_RATE: 1 {stats.currencyInfo.from} = {stats.currencyInfo.rate.toFixed(6)} {stats.currencyInfo.to}</div>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1039,6 +1133,26 @@ export default function VariantPage() {
                         <div>Conversion time: {stats.conversionTime.toFixed(3)} seconds</div>
                         <div>Model: {stats.model}</div>
                         <div>Timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                        {stats.usage && (
+                          <>
+                            <div className="pt-1 border-t border-gray-700 mt-2" />
+                            <div>Tokens: {stats.usage.totalTokens.toLocaleString()}</div>
+                            <div className="pl-3">Input: {stats.usage.promptTokens.toLocaleString()}</div>
+                            <div className="pl-3">Output: {stats.usage.completionTokens.toLocaleString()}</div>
+                          </>
+                        )}
+                        {stats.estimatedCost !== null && stats.estimatedCost !== undefined && (
+                          <div>Cost: ${stats.estimatedCost.toFixed(6)}</div>
+                        )}
+                        {stats.estimatedWaterUsage !== null && stats.estimatedWaterUsage !== undefined && (
+                          <div>Water: ~{stats.estimatedWaterUsage.toFixed(2)}L</div>
+                        )}
+                        {stats.currencyInfo && (
+                          <>
+                            <div className="pt-1 border-t border-gray-700 mt-2" />
+                            <div>Exchange: 1 {stats.currencyInfo.from} = {stats.currencyInfo.rate.toFixed(6)} {stats.currencyInfo.to}</div>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1079,6 +1193,26 @@ export default function VariantPage() {
                         <div>Conversion time: {stats.conversionTime.toFixed(3)} seconds</div>
                         <div>Model: {stats.model}</div>
                         <div>Timestamp: {new Date(stats.timestamp).toLocaleString()}</div>
+                        {stats.usage && (
+                          <>
+                            <div className="pt-2 mt-2 border-t border-border" />
+                            <div>Total tokens: {stats.usage.totalTokens.toLocaleString()}</div>
+                            <div className="pl-3">Input: {stats.usage.promptTokens.toLocaleString()}</div>
+                            <div className="pl-3">Output: {stats.usage.completionTokens.toLocaleString()}</div>
+                          </>
+                        )}
+                        {stats.estimatedCost !== null && stats.estimatedCost !== undefined && (
+                          <div>Estimated cost: ${stats.estimatedCost.toFixed(6)}</div>
+                        )}
+                        {stats.estimatedWaterUsage !== null && stats.estimatedWaterUsage !== undefined && (
+                          <div>Water usage: ~{stats.estimatedWaterUsage.toFixed(2)} liters</div>
+                        )}
+                        {stats.currencyInfo && (
+                          <>
+                            <div className="pt-2 mt-2 border-t border-border" />
+                            <div>Exchange rate: 1 {stats.currencyInfo.from} = {stats.currencyInfo.rate.toFixed(6)} {stats.currencyInfo.to}</div>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>

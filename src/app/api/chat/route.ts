@@ -5,6 +5,42 @@ import { convertCurrency } from "@/lib/server/exchange-rates";
 
 export const runtime = "edge";
 
+// Model pricing (per 1M tokens)
+const MODEL_PRICING: Record<string, { input: number; output: number }> = {
+  "openai/gpt-4o": { input: 2.5, output: 10.0 },
+  "openai/gpt-4o-mini": { input: 0.15, output: 0.6 },
+  "openai/gpt-4-turbo": { input: 10.0, output: 30.0 },
+  "openai/gpt-4": { input: 30.0, output: 60.0 },
+  "openai/gpt-3.5-turbo": { input: 0.5, output: 1.5 },
+  "anthropic/claude-3.5-sonnet": { input: 3.0, output: 15.0 },
+  "anthropic/claude-3-opus": { input: 15.0, output: 75.0 },
+  "anthropic/claude-3-sonnet": { input: 3.0, output: 15.0 },
+  "anthropic/claude-3-haiku": { input: 0.25, output: 1.25 },
+  "google/gemini-pro": { input: 0.5, output: 1.5 },
+  "meta-llama/llama-3.1-70b-instruct": { input: 0.35, output: 0.4 },
+  "meta-llama/llama-3.1-405b-instruct": { input: 2.5, output: 2.5 },
+};
+
+// Calculate cost estimate based on token usage
+function calculateCost(usage: { prompt_tokens: number; completion_tokens: number } | undefined, model: string): number | null {
+  if (!usage) return null;
+
+  const pricing = MODEL_PRICING[model];
+  if (!pricing) {
+    // Default rough estimate if model not in our table
+    return ((usage.prompt_tokens * 1.0 + usage.completion_tokens * 3.0) / 1_000_000);
+  }
+
+  return (usage.prompt_tokens * pricing.input + usage.completion_tokens * pricing.output) / 1_000_000;
+}
+
+// Calculate estimated water usage (data center cooling)
+// Research suggests ~0.5-2 liters per 1000 tokens, we'll use 1 liter
+function calculateWaterUsage(totalTokens: number | undefined): number | null {
+  if (!totalTokens) return null;
+  return (totalTokens / 1000) * 1.0; // liters
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -27,6 +63,7 @@ export async function POST(req: NextRequest) {
 
     // Detect currency conversion and fetch real exchange rates
     let currencyData: string | null = null;
+    let currencyInfo: { from: string; to: string; rate: number; amount: number } | null = null;
     if (from && to) {
       const currencyConversion = detectCurrencyConversion(from, to);
 
@@ -38,6 +75,14 @@ export async function POST(req: NextRequest) {
             currencyConversion.from,
             currencyConversion.to
           );
+
+          // Store currency info for stats
+          currencyInfo = {
+            from: currencyConversion.from,
+            to: currencyConversion.to,
+            rate: exchangeResult.rate,
+            amount: amount,
+          };
 
           const fromName = getCurrencyDisplayName(currencyConversion.from);
           const toName = getCurrencyDisplayName(currencyConversion.to);
@@ -156,11 +201,29 @@ This is authoritative, real-time financial data. Accuracy is critical.
     const endTime = performance.now();
     const conversionTimeMs = endTime - startTime;
 
+    // Get the effective model used
+    const effectiveModel = model || nonStreamResponse.model || "openai/gpt-5.1-chat";
+
+    // Extract token usage
+    const usage = nonStreamResponse.usage;
+
     // Stats for nerds
     const stats = {
       conversionTime: conversionTimeMs / 1000, // Convert to seconds with full precision
-      model: model || nonStreamResponse.model || "openai/gpt-5.1-chat",
+      model: effectiveModel,
       timestamp: new Date().toISOString(),
+      // Token usage
+      usage: usage ? {
+        promptTokens: usage.prompt_tokens,
+        completionTokens: usage.completion_tokens,
+        totalTokens: usage.total_tokens,
+      } : null,
+      // Cost estimate
+      estimatedCost: calculateCost(usage, effectiveModel),
+      // Water usage estimate
+      estimatedWaterUsage: calculateWaterUsage(usage?.total_tokens),
+      // Currency info (only when currency conversion was used)
+      currencyInfo: currencyInfo,
     };
 
     return new Response(JSON.stringify({ content, model: nonStreamResponse.model, raw: nonStreamResponse, stats }), {

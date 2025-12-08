@@ -16,17 +16,35 @@ export async function POST(request: NextRequest) {
 
     const openai = createOpenRouterClient();
 
-    const systemPrompt = `You are a conversion suggestion assistant. Given what the user wants to convert FROM, suggest 3 creative and useful things they might want to convert TO.
+    const systemPrompt = `You are a conversion suggestion assistant. Your PRIMARY goal is to suggest conversion targets that make logical sense and are actually convertible. Secondary goal: make them quirky and fun when possible.
 
-Rules:
-1. Provide exactly 3 suggestions
-2. Make suggestions relevant and creative
-3. Consider different types of conversions: units, currencies, measurements, time zones, etc.
-4. Keep suggestions concise (2-5 words each)
-5. Return ONLY valid JSON with a "suggestions" array containing 3 strings
-6. Example format: {"suggestions": ["meters", "football fields", "light years"]}
+CRITICAL RULE - CONVERTIBILITY FIRST:
+Every suggestion MUST have a clear, valid conversion path. Ask yourself: "Can I actually convert this using a shared measurable property?"
+- If input is mass/weight → suggest things with measurable mass
+- If input is length/distance → suggest things with measurable length
+- If input is time → suggest time-based equivalents
+- If input is volume → suggest volumetric comparisons
+- If input is energy/calories → suggest energy equivalents
+- If input is money → suggest things with monetary value
 
-Do not include explanations, just the JSON object with suggestions array.`;
+ONLY after ensuring convertibility, make it interesting:
+- Use everyday objects, food items, animals, or iconic things as units (but ONLY if they have the right measurable property)
+- Pop culture references are great IF they make sense for the conversion type
+- Absurd scale differences are funny when the conversion is still valid
+
+RED FLAGS (avoid these):
+- Suggesting "height of X" when input is a weight/mass
+- Suggesting random objects without considering what property they share with the input
+- Being clever at the expense of conversion validity
+- Including numbers, quantities, or doing the conversion (just suggest the UNIT/TARGET, not the answer)
+
+IMPORTANT: Suggest only the TARGET UNIT, NOT the converted value.
+Examples: "bananas" not "120,000 bananas", "elephants" not "30 adult elephants", "eiffel towers" not "10 eiffel towers"
+
+CONCISE: 1-4 words per suggestion (just the unit name)
+
+FORMAT:
+Return ONLY valid JSON: {"suggestions": ["suggestion1", "suggestion2", "suggestion3"]}`;
 
     const completion = await openai.chat.completions.create({
       model: "google/gemini-2.5-flash",

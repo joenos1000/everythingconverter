@@ -43,17 +43,35 @@ export async function POST(req: NextRequest) {
           const toName = getCurrencyDisplayName(currencyConversion.to);
           const rateDate = new Date(exchangeResult.timestamp).toLocaleString();
 
-          currencyData = `
-IMPORTANT: ACTUAL LIVE EXCHANGE RATE DATA (Use this authoritative data for the conversion):
-- Source: ${amount} ${fromName} (${currencyConversion.from})
-- Target: ${toName} (${currencyConversion.to})
-- Current Exchange Rate: 1 ${currencyConversion.from} = ${exchangeResult.rate.toFixed(6)} ${currencyConversion.to}
-- Converted Amount: ${exchangeResult.convertedAmount.toFixed(2)} ${currencyConversion.to}
-- Rate Updated: ${rateDate}
-- Base Currency: ${exchangeResult.base}
+          // Format the result with appropriate precision
+          const formatCurrency = (value: number) => {
+            if (value >= 1000) return value.toFixed(2);
+            if (value >= 1) return value.toFixed(2);
+            if (value >= 0.01) return value.toFixed(4);
+            return value.toFixed(8);
+          };
 
-You MUST use this actual exchange rate data for the conversion. This is real, current data from Open Exchange Rates API.
-Do NOT make up or estimate exchange rates. Use the provided rate: ${exchangeResult.rate.toFixed(6)}
+          const formattedResult = formatCurrency(exchangeResult.convertedAmount);
+
+          currencyData = `
+CRITICAL CURRENCY CONVERSION DIRECTIVE:
+This is a currency conversion request. The conversion has ALREADY been calculated using real-time exchange rates from the Open Exchange Rates API.
+
+CONVERSION DETAILS:
+- Input: ${amount} ${fromName} (${currencyConversion.from})
+- Output: ${toName} (${currencyConversion.to})
+- Exchange Rate: 1 ${currencyConversion.from} = ${exchangeResult.rate.toFixed(6)} ${currencyConversion.to}
+- PRE-CALCULATED RESULT: ${formattedResult} ${currencyConversion.to}
+- Rate Last Updated: ${rateDate}
+
+MANDATORY INSTRUCTIONS:
+1. You MUST use the PRE-CALCULATED RESULT shown above as your final answer
+2. DO NOT recalculate or modify this value in any way
+3. DO NOT use outdated exchange rates or estimates
+4. Your result field MUST be exactly: "${formattedResult} ${currencyConversion.to}"
+5. Your explanation should mention that you used the current exchange rate of ${exchangeResult.rate.toFixed(6)}
+
+This is authoritative, real-time financial data. Accuracy is critical.
 `;
 
           // Prepend currency data to the system message or add it as a new message

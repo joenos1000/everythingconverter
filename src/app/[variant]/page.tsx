@@ -1368,7 +1368,7 @@ export default function VariantPage() {
                     variant === "minimal" ? "bg-gray-700 border border-gray-600" :
                     "bg-secondary border border-border"
                   }`}>Ctrl/Cmd + K</kbd>
-                  <span className="text-sm">Focus "From" input</span>
+                  <span className="text-sm">Focus &quot;From&quot; input</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <kbd className={`px-2 py-1 text-xs rounded ${
@@ -1378,7 +1378,7 @@ export default function VariantPage() {
                     variant === "minimal" ? "bg-gray-700 border border-gray-600" :
                     "bg-secondary border border-border"
                   }`}>Ctrl/Cmd + L</kbd>
-                  <span className="text-sm">Focus "To" input</span>
+                  <span className="text-sm">Focus &quot;To&quot; input</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <kbd className={`px-2 py-1 text-xs rounded ${

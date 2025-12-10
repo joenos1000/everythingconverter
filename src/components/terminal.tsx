@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useAiModel } from "@/hooks/ai-model";
 
 interface TerminalLine {
@@ -13,6 +14,7 @@ interface TerminalLine {
 type TerminalState = "idle" | "awaiting_from" | "awaiting_to" | "converting" | "generating_surprise";
 
 export function Terminal() {
+  const router = useRouter();
   const { selectedModel } = useAiModel();
   const [lines, setLines] = useState<TerminalLine[]>([]);
   const [currentInput, setCurrentInput] = useState("");
@@ -280,11 +282,20 @@ if (parsed.explanation) {
       case "surprise me":
         handleSurprise();
         break;
-      
+
+      case "bench":
+        addLine("output", "Launching AI Model Benchmark Suite...");
+        addLine("system", "Redirecting to /bench...");
+        setTimeout(() => {
+          router.push("/bench");
+        }, 1000);
+        break;
+
       case "help":
         addLine("output", "Available commands:");
         addLine("output", "  start       - Begin conversion process");
         addLine("output", "  surprise me - Generate and run fun conversions");
+        addLine("output", "  bench       - Launch AI model benchmark suite");
         addLine("output", "  clear       - Clear terminal");
         addLine("output", "  help        - Show this help message");
         addLine("prompt", "");
@@ -308,7 +319,7 @@ if (parsed.explanation) {
         addLine("prompt", "");
         break;
     }
-  }, [state, tempFrom, addLine, handleConvert, handleSurprise]);
+  }, [state, tempFrom, addLine, handleConvert, handleSurprise, router]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter") {

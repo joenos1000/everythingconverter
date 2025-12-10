@@ -1023,6 +1023,12 @@ export default function VariantPage() {
           </>
         )}
 
+        {variant === "benchmark" && (
+          <section className="w-full">
+            <Benchmark />
+          </section>
+        )}
+
         {variant === "tron" && (
           <section className="space-y-8 relative z-10">
             <div className="flex flex-col items-center gap-6">

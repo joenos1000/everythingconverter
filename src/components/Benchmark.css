@@ -1,0 +1,387 @@
+/* Benchmark Theme - Retro 90s CPU Benchmark Styling */
+
+/* Main container with CRT scanline effect */
+.benchmark-container {
+  background: #000000;
+  color: #00FF00;
+  font-family: 'Courier New', monospace;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* CRT scanline overlay effect */
+.benchmark-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 0, 0.03) 0px,
+    transparent 1px,
+    transparent 2px,
+    rgba(0, 255, 0, 0.03) 3px
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+/* Content wrapper - ensure it's above the scanline effect */
+.benchmark-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Text glow effects */
+.benchmark-text-glow {
+  text-shadow:
+    0 0 5px #00FF00,
+    0 0 10px #00FF00,
+    0 0 15px #00FF00;
+}
+
+.benchmark-text-cyan {
+  color: #00FFFF;
+  text-shadow:
+    0 0 5px #00FFFF,
+    0 0 10px #00FFFF;
+}
+
+.benchmark-text-yellow {
+  color: #FFFF00;
+  text-shadow:
+    0 0 5px #FFFF00,
+    0 0 8px #FFFF00;
+}
+
+/* ASCII box borders */
+.benchmark-box {
+  border: 2px solid #00FF00;
+  padding: 1rem;
+  position: relative;
+  background: rgba(0, 255, 0, 0.03);
+  box-shadow:
+    inset 0 0 20px rgba(0, 255, 0, 0.1),
+    0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+/* Boot sequence styling */
+.benchmark-boot {
+  font-family: 'Courier New', monospace;
+  color: #00FF00;
+  line-height: 1.4;
+}
+
+.benchmark-boot-line {
+  white-space: pre-wrap;
+  margin-bottom: 0.2rem;
+}
+
+/* Blinking cursor animation */
+@keyframes boot-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.benchmark-boot-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: #00FF00;
+  margin-left: 2px;
+  animation: boot-blink 1s infinite;
+}
+
+/* Progress bar */
+.benchmark-progress-bar {
+  background: #000;
+  border: 1px solid #00FF00;
+  height: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.benchmark-progress-fill {
+  background: linear-gradient(90deg, #00FF00, #00FFFF);
+  height: 100%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+}
+
+/* Progress bar with block characters */
+.benchmark-progress-blocks {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+/* Results table */
+.benchmark-results-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Courier New', monospace;
+}
+
+.benchmark-results-table th,
+.benchmark-results-table td {
+  border: 1px solid #00FF00;
+  padding: 0.5rem;
+  text-align: left;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.benchmark-results-table th {
+  background: rgba(0, 255, 0, 0.1);
+  color: #00FFFF;
+  font-weight: bold;
+  text-shadow: 0 0 8px #00FFFF;
+}
+
+.benchmark-results-table .winner {
+  background: rgba(0, 255, 255, 0.15);
+  color: #00FFFF;
+  font-weight: bold;
+  box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.benchmark-results-table .error {
+  background: rgba(255, 0, 0, 0.15);
+  color: #FF0000;
+}
+
+/* Comparison bar */
+.benchmark-comparison-bar {
+  background: #00FF00;
+  height: 100%;
+  transition: width 0.5s ease-out;
+  box-shadow: 0 0 10px #00FF00;
+  position: relative;
+}
+
+.benchmark-comparison-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Button styles */
+.benchmark-button {
+  background: transparent;
+  border: 2px solid #00FF00;
+  color: #00FF00;
+  padding: 0.75rem 2rem;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-shadow: 0 0 5px #00FF00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.benchmark-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.benchmark-button:hover::before {
+  left: 100%;
+}
+
+.benchmark-button:hover {
+  background: rgba(0, 255, 0, 0.15);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+  text-shadow: 0 0 10px #00FF00;
+}
+
+.benchmark-button:active {
+  background: rgba(0, 255, 0, 0.25);
+  transform: scale(0.98);
+}
+
+.benchmark-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.benchmark-button:disabled:hover {
+  background: transparent;
+}
+
+/* Input fields */
+.benchmark-input {
+  background: #000;
+  border: 2px solid #00FF00;
+  color: #00FF00;
+  padding: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+.benchmark-input:focus {
+  box-shadow:
+    inset 0 0 10px rgba(0, 255, 0, 0.2),
+    0 0 15px rgba(0, 255, 0, 0.5);
+  border-color: #00FFFF;
+}
+
+.benchmark-input::placeholder {
+  color: rgba(0, 255, 0, 0.4);
+}
+
+/* Checkbox styling */
+.benchmark-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #00FF00;
+  background: #000;
+  cursor: pointer;
+  appearance: none;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.benchmark-checkbox:checked {
+  background: #00FF00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+}
+
+.benchmark-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.benchmark-checkbox:hover {
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Loading indicator */
+@keyframes spinner {
+  0% { content: '|'; }
+  25% { content: '/'; }
+  50% { content: '─'; }
+  75% { content: '\\'; }
+}
+
+.benchmark-loading::after {
+  content: '|';
+  animation: spinner 0.5s linear infinite;
+  margin-left: 0.5rem;
+}
+
+/* Rank badges */
+.benchmark-rank {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-weight: bold;
+  border-radius: 3px;
+  font-size: 0.75rem;
+}
+
+.benchmark-rank-1 {
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+  border: 1px solid #FFD700;
+  text-shadow: 0 0 10px #FFD700;
+}
+
+.benchmark-rank-2 {
+  background: rgba(192, 192, 192, 0.2);
+  color: #C0C0C0;
+  border: 1px solid #C0C0C0;
+  text-shadow: 0 0 10px #C0C0C0;
+}
+
+.benchmark-rank-3 {
+  background: rgba(205, 127, 50, 0.2);
+  color: #CD7F32;
+  border: 1px solid #CD7F32;
+  text-shadow: 0 0 10px #CD7F32;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .benchmark-container {
+    font-size: 14px;
+  }
+
+  .benchmark-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .benchmark-results-table {
+    font-size: 0.75rem;
+  }
+
+  .benchmark-results-table th,
+  .benchmark-results-table td {
+    padding: 0.25rem;
+  }
+}
+
+/* Hover effect for expandable rows */
+.benchmark-expandable {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.benchmark-expandable:hover {
+  background: rgba(0, 255, 0, 0.05);
+}
+
+/* System status panel */
+.benchmark-system-status {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+/* Monospace text utility */
+.benchmark-mono {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0;
+}

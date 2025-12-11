@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AsciiWave } from "@/components/ascii-wave";
 import AsciiTunnelBackground from "@/components/ascii-tunnel-background";
-import { Terminal } from "@/components/terminal";
+import { Terminal } from "@/components/Terminal";
 import { useUiVariant } from "@/hooks/ui-variant";
 import { useAiModel } from "@/hooks/ai-model";
 import LetterGlitch from "@/components/LetterGlitch";
 import dynamic from "next/dynamic";
 import Orb from "@/components/Orb";
 import { SuggestionButtons } from "@/components/suggestion-buttons";
+import { Benchmark } from "@/components/Benchmark";
 
 // Dynamic import to avoid SSR issues with face-api.js
 const GridScan = dynamic(() => import("@/components/GridScan").then(mod => ({ default: mod.GridScan })), {

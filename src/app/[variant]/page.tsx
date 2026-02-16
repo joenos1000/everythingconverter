@@ -47,6 +47,13 @@ export default function VariantPage() {
   const fromInputRef = useRef<HTMLInputElement>(null);
   const toInputRef = useRef<HTMLInputElement>(null);
 
+  // Draggable window state for Y2K theme
+  const [windowPosition, setWindowPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartPos = useRef({ x: 0, y: 0 });
+  const dragStartMouse = useRef({ x: 0, y: 0 });
+  const [isBrowserOpen, setIsBrowserOpen] = useState(true);
+
   // Load shared URL parameters on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -298,6 +305,40 @@ export default function VariantPage() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [canConvert, isConverting, hasInput, result, handleConvert, handleClear]);
+
+  // Drag handlers for Y2K theme window
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    if (variant !== 'y2k') return;
+    setIsDragging(true);
+    dragStartPos.current = { ...windowPosition };
+    dragStartMouse.current = { x: e.clientX, y: e.clientY };
+    e.preventDefault();
+  }, [variant, windowPosition]);
+
+  const handleDragMove = useCallback((e: MouseEvent) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartMouse.current.x;
+    const dy = e.clientY - dragStartMouse.current.y;
+    setWindowPosition({
+      x: dragStartPos.current.x + dx,
+      y: dragStartPos.current.y + dy
+    });
+  }, [isDragging]);
+
+  const handleDragEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleDragMove);
+      window.addEventListener('mouseup', handleDragEnd);
+      return () => {
+        window.removeEventListener('mousemove', handleDragMove);
+        window.removeEventListener('mouseup', handleDragEnd);
+      };
+    }
+  }, [isDragging, handleDragMove, handleDragEnd]);
 
   return (
     <div className={`min-h-screen w-full flex ${
@@ -781,19 +822,49 @@ export default function VariantPage() {
                 animation: progress 1.5s ease-in-out infinite;
               }
             `}</style>
-            <div className="fixed inset-0 bg-[#5a5a5a] -z-10" />
+            {/* Desktop background with wallpaper */}
+            <div 
+              className="fixed inset-0 -z-10"
+              style={{
+                background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%)'
+              }}
+            />
+            
+            {/* Desktop icon */}
+            <div 
+              className="fixed top-20 left-4 z-10 flex flex-col items-center cursor-pointer group"
+              onDoubleClick={() => {
+                setIsBrowserOpen(true);
+                setWindowPosition({ x: 0, y: 0 });
+              }}
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-[#4a90e2] to-[#2c5aa0] rounded-lg shadow-lg flex items-center justify-center border-2 border-white/30 group-hover:border-white/60 transition-all">
+                <span className="text-white text-xl font-bold">E</span>
+              </div>
+              <span className="mt-1 text-white text-xs text-center drop-shadow-[1px_1px_1px_rgba(0,0,0,1)] max-w-[80px] leading-tight">
+                Everything Converter
+              </span>
+            </div>
+            
             <section className="w-full max-w-2xl relative z-10">
               {/* Windows XP style window */}
+              {isBrowserOpen && (
               <div
                 className="rounded-t-lg overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.5)]"
-                style={{ fontFamily: 'Tahoma, Verdana, sans-serif' }}
+                style={{
+                  fontFamily: 'Tahoma, Verdana, sans-serif',
+                  transform: `translate(${windowPosition.x}px, ${windowPosition.y}px)`,
+                  cursor: isDragging ? 'grabbing' : 'default'
+                }}
               >
                 {/* Title bar - Windows XP blue gradient */}
                 <div
-                  className="px-3 py-1.5 flex items-center justify-between"
+                  className="px-3 py-1.5 flex items-center justify-between select-none"
                   style={{
                     background: 'linear-gradient(180deg, #0a246a 0%, #0f3da3 8%, #1d5fc0 40%, #2b71d0 88%, #245edb 93%, #1941a5 95%, #0f2f6c 100%)',
+                    cursor: 'move'
                   }}
+                  onMouseDown={handleDragStart}
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-[#f0f0f0] rounded-sm flex items-center justify-center text-[10px] font-bold text-[#0a246a]">E</div>
@@ -802,7 +873,12 @@ export default function VariantPage() {
                   <div className="flex gap-1">
                     <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">_</button>
                     <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">□</button>
-                    <button className="w-5 h-5 bg-gradient-to-b from-[#e08080] to-[#c04040] rounded-sm text-white text-xs border border-white/30 hover:from-[#ff9090] hover:to-[#d05050] active:from-[#d06060] active:to-[#a03030]">×</button>
+                    <button
+                      onClick={() => setIsBrowserOpen(false)}
+                      className="w-5 h-5 bg-gradient-to-b from-[#e08080] to-[#c04040] rounded-sm text-white text-xs border border-white/30 hover:from-[#ff9090] hover:to-[#d05050] active:from-[#d06060] active:to-[#a03030]"
+                    >
+                      ×
+                    </button>
                   </div>
                 </div>
 
@@ -1013,6 +1089,7 @@ export default function VariantPage() {
                   </div>
                 </div>
               </div>
+              )}
 
               {/* Footer link */}
               <div className="mt-4 text-center">

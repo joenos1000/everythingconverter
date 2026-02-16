@@ -55,6 +55,12 @@ export default function VariantPage() {
   const [isBrowserOpen, setIsBrowserOpen] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
 
+  // Desktop icon drag state
+  const [iconPosition, setIconPosition] = useState({ x: 16, y: 80 });
+  const [isIconDragging, setIsIconDragging] = useState(false);
+  const iconDragStartPos = useRef({ x: 0, y: 0 });
+  const iconDragStartMouse = useRef({ x: 0, y: 0 });
+
   // Load shared URL parameters on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -340,6 +346,39 @@ export default function VariantPage() {
       };
     }
   }, [isDragging, handleDragMove, handleDragEnd]);
+
+  // Desktop icon drag handlers
+  const handleIconDragStart = useCallback((e: React.MouseEvent) => {
+    setIsIconDragging(true);
+    iconDragStartPos.current = { ...iconPosition };
+    iconDragStartMouse.current = { x: e.clientX, y: e.clientY };
+    e.preventDefault();
+  }, [iconPosition]);
+
+  const handleIconDragMove = useCallback((e: MouseEvent) => {
+    if (!isIconDragging) return;
+    const dx = e.clientX - iconDragStartMouse.current.x;
+    const dy = e.clientY - iconDragStartMouse.current.y;
+    setIconPosition({
+      x: iconDragStartPos.current.x + dx,
+      y: iconDragStartPos.current.y + dy
+    });
+  }, [isIconDragging]);
+
+  const handleIconDragEnd = useCallback(() => {
+    setIsIconDragging(false);
+  }, []);
+
+  useEffect(() => {
+    if (isIconDragging) {
+      window.addEventListener('mousemove', handleIconDragMove);
+      window.addEventListener('mouseup', handleIconDragEnd);
+      return () => {
+        window.removeEventListener('mousemove', handleIconDragMove);
+        window.removeEventListener('mouseup', handleIconDragEnd);
+      };
+    }
+  }, [isIconDragging, handleIconDragMove, handleIconDragEnd]);
 
   return (
     <div className={`min-h-screen w-full flex ${
@@ -862,7 +901,13 @@ export default function VariantPage() {
             
             {/* Desktop icon */}
             <div 
-              className="fixed top-20 left-4 z-10 flex flex-col items-center cursor-pointer group"
+              className="fixed z-10 flex flex-col items-center cursor-pointer group select-none"
+              style={{
+                left: `${iconPosition.x}px`,
+                top: `${iconPosition.y}px`,
+                cursor: isIconDragging ? 'grabbing' : 'default'
+              }}
+              onMouseDown={handleIconDragStart}
               onDoubleClick={() => {
                 setIsBrowserOpen(true);
                 setWindowPosition({ x: 0, y: 0 });
@@ -871,38 +916,39 @@ export default function VariantPage() {
               <div className="w-12 h-12 bg-gradient-to-br from-[#4a90e2] to-[#2c5aa0] rounded-lg shadow-lg flex items-center justify-center border-2 border-white/30 group-hover:border-white/60 transition-all">
                 <span className="text-white text-xl font-bold">E</span>
               </div>
-              <span className="mt-1 text-white text-xs text-center drop-shadow-[1px_1px_1px_rgba(0,0,0,1)] max-w-[80px] leading-tight">
+              <span className="mt-1 text-white text-xs text-center drop-shadow-[1px_1px_1px_rgba(0,0,0,1)] max-w-[80px] leading-tight bg-black/50 px-1 rounded">
                 Everything Converter
               </span>
             </div>
             
             <section className="w-full max-w-2xl relative z-10">
-              {/* Windows XP style window */}
+              {/* Windows XP style window with animation wrapper */}
               {isBrowserOpen && (
-              <div
-                className={`rounded-t-lg overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.5)] ${isClosing ? 'window-closing' : 'window-opening'}`}
-                style={{
-                  fontFamily: 'Tahoma, Verdana, sans-serif',
-                  transform: isClosing ? undefined : `translate(${windowPosition.x}px, ${windowPosition.y}px)`,
-                  cursor: isDragging ? 'grabbing' : 'default'
-                }}
-              >
-                {/* Title bar - Windows XP blue gradient */}
+              <div className={isClosing ? 'window-closing' : 'window-opening'}>
                 <div
-                  className="px-3 py-1.5 flex items-center justify-between select-none"
+                  className="rounded-t-lg overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.5)]"
                   style={{
-                    background: 'linear-gradient(180deg, #0a246a 0%, #0f3da3 8%, #1d5fc0 40%, #2b71d0 88%, #245edb 93%, #1941a5 95%, #0f2f6c 100%)',
-                    cursor: 'move'
+                    fontFamily: 'Tahoma, Verdana, sans-serif',
+                    transform: `translate(${windowPosition.x}px, ${windowPosition.y}px)`,
+                    cursor: isDragging ? 'grabbing' : 'default'
                   }}
-                  onMouseDown={handleDragStart}
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-[#f0f0f0] rounded-sm flex items-center justify-center text-[10px] font-bold text-[#0a246a]">E</div>
-                    <span className="text-white text-sm font-bold drop-shadow-[1px_1px_0px_rgba(0,0,0,0.5)]">The Everything Converter - Internet Explorer</span>
-                  </div>
-                  <div className="flex gap-1">
-                    <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">_</button>
-                    <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">□</button>
+                  {/* Title bar - Windows XP blue gradient */}
+                  <div
+                    className="px-3 py-1.5 flex items-center justify-between select-none"
+                    style={{
+                      background: 'linear-gradient(180deg, #0a246a 0%, #0f3da3 8%, #1d5fc0 40%, #2b71d0 88%, #245edb 93%, #1941a5 95%, #0f2f6c 100%)',
+                      cursor: 'move'
+                    }}
+                    onMouseDown={handleDragStart}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-[#f0f0f0] rounded-sm flex items-center justify-center text-[10px] font-bold text-[#0a246a]">E</div>
+                      <span className="text-white text-sm font-bold drop-shadow-[1px_1px_0px_rgba(0,0,0,0.5)]">The Everything Converter - Internet Explorer</span>
+                    </div>
+                    <div className="flex gap-1">
+                      <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">_</button>
+                      <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">□</button>
                     <button
                       onClick={() => {
                         setIsClosing(true);
@@ -1124,6 +1170,7 @@ export default function VariantPage() {
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
               )}
             </section>

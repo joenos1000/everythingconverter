@@ -54,6 +54,8 @@ export default function VariantPage() {
   const dragStartMouse = useRef({ x: 0, y: 0 });
   const [isBrowserOpen, setIsBrowserOpen] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const prevWindowPosition = useRef({ x: 0, y: 0 });
 
   // Desktop icon drag state
   const [iconPosition, setIconPosition] = useState({ x: 16, y: 80 });
@@ -921,15 +923,15 @@ export default function VariantPage() {
               </span>
             </div>
             
-            <section className="w-full max-w-2xl relative z-10">
+            <section className={`relative ${isMaximized ? 'fixed inset-0 z-[100] w-full h-full' : 'z-10 w-full max-w-2xl'}`}>
               {/* Windows XP style window with animation wrapper */}
               {isBrowserOpen && (
-              <div className={isClosing ? 'window-closing' : 'window-opening'}>
+              <div className={`${isClosing ? 'window-closing' : 'window-opening'} ${isMaximized ? 'fixed inset-0 z-[100]' : ''}`}>
                 <div
-                  className="rounded-t-lg overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.5)]"
+                  className={`overflow-hidden ${isMaximized ? 'w-full h-full rounded-none flex flex-col' : 'rounded-t-lg shadow-[4px_4px_10px_rgba(0,0,0,0.5)]'}`}
                   style={{
                     fontFamily: 'Tahoma, Verdana, sans-serif',
-                    transform: `translate(${windowPosition.x}px, ${windowPosition.y}px)`,
+                    transform: isMaximized ? 'none' : `translate(${windowPosition.x}px, ${windowPosition.y}px)`,
                     cursor: isDragging ? 'grabbing' : 'default'
                   }}
                 >
@@ -938,9 +940,9 @@ export default function VariantPage() {
                     className="px-3 py-1.5 flex items-center justify-between select-none"
                     style={{
                       background: 'linear-gradient(180deg, #0a246a 0%, #0f3da3 8%, #1d5fc0 40%, #2b71d0 88%, #245edb 93%, #1941a5 95%, #0f2f6c 100%)',
-                      cursor: 'move'
+                      cursor: isMaximized ? 'default' : 'move'
                     }}
-                    onMouseDown={handleDragStart}
+                    onMouseDown={isMaximized ? undefined : handleDragStart}
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 bg-[#f0f0f0] rounded-sm flex items-center justify-center text-[10px] font-bold text-[#0a246a]">E</div>
@@ -948,7 +950,21 @@ export default function VariantPage() {
                     </div>
                     <div className="flex gap-1">
                       <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">_</button>
-                      <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">□</button>
+                      <button
+                        onClick={() => {
+                          if (isMaximized) {
+                            setIsMaximized(false);
+                            setWindowPosition(prevWindowPosition.current);
+                          } else {
+                            prevWindowPosition.current = { ...windowPosition };
+                            setIsMaximized(true);
+                            setWindowPosition({ x: 0, y: 0 });
+                          }
+                        }}
+                        className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]"
+                      >
+                        {isMaximized ? '❐' : '□'}
+                      </button>
                     <button
                       onClick={() => {
                         setIsClosing(true);
@@ -989,7 +1005,7 @@ export default function VariantPage() {
                 </div>
 
                 {/* Main content area */}
-                <div className="bg-white p-6 min-h-[300px]" style={{ borderStyle: 'inset', borderWidth: '2px', borderColor: '#808080 #fff #fff #808080' }}>
+                <div className={`bg-white p-6 ${isMaximized ? 'flex-1 h-[calc(100vh-120px)]' : 'min-h-[300px]'}`} style={{ borderStyle: 'inset', borderWidth: '2px', borderColor: '#808080 #fff #fff #808080' }}>
                   <div className="text-center mb-6">
                     <h1 className="text-2xl font-bold text-[#000080] mb-1" style={{ fontFamily: 'Times New Roman, serif' }}>
                       Welcome to The Everything Converter!

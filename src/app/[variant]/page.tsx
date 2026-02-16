@@ -53,6 +53,7 @@ export default function VariantPage() {
   const dragStartPos = useRef({ x: 0, y: 0 });
   const dragStartMouse = useRef({ x: 0, y: 0 });
   const [isBrowserOpen, setIsBrowserOpen] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
 
   // Load shared URL parameters on mount
   useEffect(() => {
@@ -821,6 +822,35 @@ export default function VariantPage() {
               .loading-bar {
                 animation: progress 1.5s ease-in-out infinite;
               }
+              @keyframes windowOpen {
+                0% {
+                  transform: translate(50px, 80px) scale(0.1);
+                  opacity: 0;
+                }
+                50% {
+                  opacity: 1;
+                }
+                100% {
+                  transform: translate(0, 0) scale(1);
+                  opacity: 1;
+                }
+              }
+              @keyframes windowClose {
+                0% {
+                  transform: scale(1);
+                  opacity: 1;
+                }
+                100% {
+                  transform: translate(50px, 80px) scale(0.1);
+                  opacity: 0;
+                }
+              }
+              .window-opening {
+                animation: windowOpen 0.3s ease-out forwards;
+              }
+              .window-closing {
+                animation: windowClose 0.2s ease-in forwards;
+              }
             `}</style>
             {/* Desktop background with wallpaper */}
             <div 
@@ -850,10 +880,10 @@ export default function VariantPage() {
               {/* Windows XP style window */}
               {isBrowserOpen && (
               <div
-                className="rounded-t-lg overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.5)]"
+                className={`rounded-t-lg overflow-hidden shadow-[4px_4px_10px_rgba(0,0,0,0.5)] ${isClosing ? 'window-closing' : 'window-opening'}`}
                 style={{
                   fontFamily: 'Tahoma, Verdana, sans-serif',
-                  transform: `translate(${windowPosition.x}px, ${windowPosition.y}px)`,
+                  transform: isClosing ? undefined : `translate(${windowPosition.x}px, ${windowPosition.y}px)`,
                   cursor: isDragging ? 'grabbing' : 'default'
                 }}
               >
@@ -874,7 +904,13 @@ export default function VariantPage() {
                     <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">_</button>
                     <button className="w-5 h-5 bg-gradient-to-b from-[#3c8fff] to-[#1e5fc0] rounded-sm text-white text-xs border border-white/30 hover:from-[#5ca0ff] hover:to-[#3070d0] active:from-[#2878ef] active:to-[#144fa0]">□</button>
                     <button
-                      onClick={() => setIsBrowserOpen(false)}
+                      onClick={() => {
+                        setIsClosing(true);
+                        setTimeout(() => {
+                          setIsBrowserOpen(false);
+                          setIsClosing(false);
+                        }, 200);
+                      }}
                       className="w-5 h-5 bg-gradient-to-b from-[#e08080] to-[#c04040] rounded-sm text-white text-xs border border-white/30 hover:from-[#ff9090] hover:to-[#d05050] active:from-[#d06060] active:to-[#a03030]"
                     >
                       ×
@@ -1090,14 +1126,14 @@ export default function VariantPage() {
                 </div>
               </div>
               )}
-
-              {/* Footer link */}
-              <div className="mt-4 text-center">
-                <a href="https://x.com/realjoecode" target="_blank" rel="noreferrer" className="text-xs text-gray-300 hover:text-white hover:underline">
-                  Contact Webmaster
-                </a>
-              </div>
             </section>
+
+            {/* Footer link - fixed at bottom */}
+            <div className="fixed bottom-4 left-0 right-0 text-center z-10">
+              <a href="https://x.com/realjoecode" target="_blank" rel="noreferrer" className="text-xs text-gray-300 hover:text-white hover:underline">
+                Contact Webmaster
+              </a>
+            </div>
           </>
         )}
 
